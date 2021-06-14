@@ -23,6 +23,188 @@
     "name": "Paul Heetebrij",
     "email": "paul.heetebrij@freedom.nl"
   },
+  "flow": {
+    "triggers": [
+      {
+        "id": "the-status-has-been-changed",
+        "title": {
+          "en": "the status has been changed"
+        },
+        "tokens": [
+          {
+            "type": "string",
+            "name": "status",
+            "title": {
+              "en": "status"
+            },
+            "example": {
+              "en": "playing status of the music-player"
+            }
+          },
+          {
+            "type": "string",
+            "name": "track",
+            "title": {
+              "en": "track"
+            },
+            "example": {
+              "en": "The current track"
+            }
+          },
+          {
+            "type": "string",
+            "name": "artist",
+            "title": {
+              "en": "artist"
+            },
+            "example": {
+              "en": "The current artist"
+            }
+          },
+          {
+            "type": "string",
+            "name": "album",
+            "title": {
+              "en": "album"
+            },
+            "example": {
+              "en": "The current album"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "play",
+        "title": {
+          "en": "play",
+          "nl": "afspelen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "stop",
+        "title": {
+          "en": "stop",
+          "nl": "stoppen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "pause-player",
+        "title": {
+          "en": "pause",
+          "nl": "pauzeren"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "toggle-repeat",
+        "title": {
+          "en": "toggle repeat"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "toggle-shuffle",
+        "title": {
+          "en": "toggle shuffle"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "set-volume",
+        "title": {
+          "en": "set volume",
+          "nl": "pas geluidssterkte aan"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "number",
+            "name": "level",
+            "placeholder": {
+              "en": "level",
+              "nl": "niveau"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "mute",
+        "title": {
+          "en": "mute",
+          "nl": "stil"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "unmute",
+        "title": {
+          "en": "unmute",
+          "nl": "niet stil"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -30,14 +212,18 @@
       },
       "class": "speaker",
       "capabilities": [
+        "onoff",
         "speaker_album",
         "speaker_artist",
+        "speaker_track",
+        "speaker_duration",
         "speaker_playing",
         "speaker_position",
         "speaker_prev",
+        "speaker_next",
+        "speaker_shuffle",
         "speaker_repeat",
         "volume_set",
-        "speaker_track",
         "volume_down",
         "volume_mute",
         "volume_up"

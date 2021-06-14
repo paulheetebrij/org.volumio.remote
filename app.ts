@@ -9,6 +9,16 @@ class MyApp extends Homey.App {
    */
   async onInit(): Promise<void> {
     this.log('MyApp has been initialized');
+
+    // const cardConditionDeviceIsPlaying = this.homey.flow.getConditionCard("device-is-playing");
+    // cardConditionDeviceIsPlaying.registerRunListener(async () => {
+    //   // true or false
+    // });
+
+    // const cardActionPlay = this.homey.flow.getActionCard("play");
+    // cardActionPlay.registerRunListener(async (args: any) => {
+
+    // });
   }
 }
 

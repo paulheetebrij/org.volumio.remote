@@ -1,0 +1,121 @@
+{
+  "triggers": [
+    {
+      "id": "the-status-has-been-changed",
+      "title": {
+        "en": "the status has been changed"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "status",
+          "title": {
+            "en": "status"
+          },
+          "example": {
+            "en": "playing status of the music-player"
+          }
+        },
+        {
+          "type": "string",
+          "name": "track",
+          "title": {
+            "en": "track"
+          },
+          "example": {
+            "en": "The current track"
+          }
+        },
+        {
+          "type": "string",
+          "name": "artist",
+          "title": {
+            "en": "artist"
+          },
+          "example": {
+            "en": "The current artist"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "album"
+          },
+          "example": {
+            "en": "The current album"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "play",
+      "title": {
+        "en": "play",
+        "nl": "afspelen"
+      }
+    },
+    {
+      "id": "stop",
+      "title": {
+        "en": "stop",
+        "nl": "stoppen"
+      }
+    },
+    {
+      "id": "pause-player",
+      "title": {
+        "en": "pause",
+        "nl": "pauzeren"
+      }
+    },
+    {
+      "id": "toggle-repeat",
+      "title": {
+        "en": "toggle repeat"
+      }
+    },
+    {
+      "id": "toggle-shuffle",
+      "title": {
+        "en": "toggle shuffle"
+      }
+    },
+    {
+      "id": "set-volume",
+      "title": {
+        "en": "set volume",
+        "nl": "pas geluidssterkte aan"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "level",
+          "placeholder": {
+            "en": "level",
+            "nl": "niveau"
+          },
+          "min": 0,
+          "max": 100,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "mute",
+      "title": {
+        "en": "mute",
+        "nl": "stil"
+      }
+    },
+    {
+      "id": "unmute",
+      "title": {
+        "en": "unmute",
+        "nl": "niet stil"
+      }
+    }
+  ]
+}

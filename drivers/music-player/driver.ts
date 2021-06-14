@@ -8,6 +8,34 @@ class MyDriver extends Driver {
    */
   async onInit() {
     this.log('MyDriver has been initialized');
+
+    // const cardActionStatusChanged = this.homey.flow.getTriggerCard('the-status-has-been-changed');
+    // cardActionStatusChanged.
+
+    //args.device = reference instance => 
+
+    // const cardActionStop = this.homey.flow.getActionCard('stop');
+    // const cardActionToggleRepeat = this.homey.flow.getActionCard('toggle-repeat');
+    // const cardActionToggleShuffle = this.homey.flow.getActionCard('toggle-shuffle');
+    // const cardActionSetVolume = this.homey.flow.getActionCard('set-volume');
+    // const cardActionMute = this.homey.flow.getActionCard('mute');
+    // const cardActionUnmute = this.homey.flow.getActionCard('unmute');
+    const cardActionPlay = this.homey.flow.getActionCard('play');
+    cardActionPlay.registerRunListener(async (args: any) => {
+      this.log(`play => ${JSON.stringify(args)}`);
+      const { device } = args;
+      const request = `${device.store.address}/api/v1/commands/?cmd=play`;
+      this.log(JSON.stringify(request));
+      await fetch(request).catch(this.error);
+    });
+    const cardActionPause = this.homey.flow.getActionCard('pause-player');
+    cardActionPause.registerRunListener(async (args: any) => {
+      this.log(`pause-player => ${JSON.stringify(args)}`);
+      const { device } = args;
+      const request = `${device.store.address}/api/v1/commands/?cmd=pause`;
+      this.log(JSON.stringify(request));
+      await fetch(request).catch(this.error);
+    });
   }
 
   /**
