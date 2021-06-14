@@ -1,4 +1,5 @@
 import { Driver } from 'homey';
+import fetch, { Request } from 'node-fetch';
 
 class MyDriver extends Driver {
 
@@ -14,18 +15,17 @@ class MyDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   async onPairListDevices() {
-    return [
-      // Example device data, note that `store` is optional
-      // {
-      //   name: 'My Device',
-      //   data: {
-      //     id: 'my-device',
-      //   },
-      //   store: {
-      //     address: '127.0.0.1',
-      //   },
-      // },
-    ];
+    const response: any = await fetch(new Request("http://192.168.178.26/api/v1/getzones", { method: "get" }));
+    if (!response.ok) {
+      throw new Error(JSON.stringify({ name: response.status, message: response.statusText }));
+    }
+    const json = response.json();
+    return json.then((doc: any) => {
+      const { id, name, host: address } = doc;
+      return {
+        name, data: { id }, store: { address }
+      }
+    })
   }
 }
 
