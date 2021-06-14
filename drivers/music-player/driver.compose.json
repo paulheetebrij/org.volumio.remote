@@ -1,0 +1,24 @@
+{
+  "name": {
+    "en": "Music Player"
+  },
+  "class": "speaker",
+  "capabilities": [
+    "speaker_album",
+    "speaker_artist",
+    "speaker_playing",
+    "speaker_position",
+    "speaker_prev",
+    "speaker_repeat",
+    "volume_set",
+    "speaker_track",
+    "volume_down",
+    "volume_mute",
+    "volume_up"
+  ],
+  "images": {
+    "small": "/drivers/music-player/assets/images/small.png",
+    "large": "/drivers/music-player/assets/images/large.png",
+    "xlarge": "/drivers/music-player/assets/images/xlarge.png"
+  }
+}
