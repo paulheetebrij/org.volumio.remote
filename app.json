@@ -212,7 +212,6 @@
       },
       "class": "speaker",
       "capabilities": [
-        "onoff",
         "speaker_album",
         "speaker_artist",
         "speaker_track",
@@ -221,12 +220,10 @@
         "speaker_position",
         "speaker_prev",
         "speaker_next",
-        "speaker_shuffle",
-        "speaker_repeat",
         "volume_set",
+        "volume_up",
         "volume_down",
-        "volume_mute",
-        "volume_up"
+        "volume_mute"
       ],
       "images": {
         "small": "/drivers/music-player/assets/images/small.png",
