@@ -25,9 +25,28 @@ interface IPlayerState {
 
 class MyDevice extends Homey.Device {
 
-  private _image: Homey.Image = new Homey.Image();
-  private get image(): Homey.Image {
+  private _image: any;
+  private _imageUrl: any;
+  private async getImage(): Promise<Homey.Image> {
+    if (!this._image) {
+      this._image = await this.homey.images.createImage()
+    }
     return this._image;
+  }
+
+  private async setAlbumArtwork(imageUrl: string): Promise<void> {
+    const image = await this.getImage();
+    image.setStream(async (stream: any) => {
+      const res = await fetch(imageUrl);
+      if (!res.ok) {
+        throw new Error("Invalid Response");
+      }
+      return res.body.pipe(stream);
+    });
+    await image.update().catch(this.error);
+    if (this._imageUrl === imageUrl) return;
+    this._imageUrl = imageUrl;
+    await this.setAlbumArtImage(image).catch(this.error);
   }
 
   private _poller: any;
@@ -58,6 +77,9 @@ class MyDevice extends Homey.Device {
       this.error(JSON.stringify(err));
       this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
     }
+    const image = await this.getImage();
+    await this.setAlbumArtImage(image).catch(this.error);
+    // await image.update().then(() => this.setAlbumArtImage(image)).catch(this.error);
 
     this.poller(() => this.getPlayerState()
       .then(
@@ -221,17 +243,7 @@ class MyDevice extends Homey.Device {
     await this.apiCommandCall(`cmd=playplaylist&name=${title}`);
   }
 
-  // private get image(): Image {
-  //   if (!this._image) {
-  //     this._image = new Image();
-  //     this._image.setUrl(null);
-  //   }
-  //   return this._image;
-  // }
-  // private _image: any;
-
   private async setPlayerState(state: IPlayerState): Promise<void> {
-    // this.log(`setPlayerState ${JSON.stringify(state)}`);
     await this.setCapabilityValue('speaker_artist', state.artist).catch(this.error);
     await this.setCapabilityValue('speaker_album', state.album).catch(this.error);
     await this.setCapabilityValue('speaker_track', state.title).catch(this.error);
@@ -239,11 +251,7 @@ class MyDevice extends Homey.Device {
     await this.setCapabilityValue('speaker_position', state.position).catch(this.error);
     await this.setCapabilityValue('volume_set', state.volume / 100).catch(this.error);
     await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
-    // this.image.setUrl(`${this.ip}${state.albumart}`);
-    // await this.image.update().then(_ => this.setAlbumArtImage(this.image)).catch(this.error);
-
-    // this._image.setUrl(null); // the URL must start with https://
-    // this._image.register().catch(console.error);
+    await this.setAlbumArtwork(`${this.ip}${state.albumart}`);
 
     // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ? "track" : state.repeat ? "playlist" : "none").catch(this.error);
   }
@@ -274,7 +282,8 @@ class MyDevice extends Homey.Device {
    */
   async onDeleted() {
     this.log('MyDevice has been deleted');
-    await this.image.unregister();
+    const image = await this.getImage();
+    await image.unregister();
     this.clearPoller();
   }
 
