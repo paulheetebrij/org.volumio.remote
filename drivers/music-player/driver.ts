@@ -1,7 +1,5 @@
-import { Driver } from 'homey';
-import fetch, { Request } from 'node-fetch';
-
-class MyDriver extends Driver {
+import Homey from 'homey';
+class MyDriver extends Homey.Driver {
 
   /**
    * onInit is called when the driver is initialized.
@@ -21,17 +19,24 @@ class MyDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   async onPairListDevices() {
-    const response: any = await fetch(new Request("http://192.168.178.26/api/v1/getzones", { method: "get" }));
-    if (!response.ok) {
-      throw new Error(JSON.stringify({ name: response.status, message: response.statusText }));
-    }
-    const json = response.json();
-    return json.then((doc: any) => {
-      const { id, name, host: address } = doc;
-      return {
-        name, data: { id }, store: { address }
-      }
-    })
+    // bron: http://192.168.178.26/api/v1/getzones
+    const id = "58f94020-bb96-477b-b0dc-a30b4eb64c0e";
+    const address = "http://192.168.178.26";
+    const name = "Dionysus";
+    return [{ name, data: { id }, store: { address } }]
+
+    // const discoveryStrategy = this.getDiscoveryStrategy();
+    // const discoveryResults = discoveryStrategy.getDiscoveryResults();
+
+    // const devices = Object.values(discoveryResults).map((discoveryResult: any) => {
+    //   return {
+    //     name: discoveryResult.txt.name,
+    //     data: {
+    //       id: discoveryResult.id,
+    //     }
+    //   };
+    // });
+    // return devices;
   }
 }
 

@@ -1,9 +1,10 @@
 import sourceMapSupport from 'source-map-support';
-sourceMapSupport.install();
-
 import Homey from 'homey';
 
+sourceMapSupport.install();
+
 class MyApp extends Homey.App {
+
   /**
    * onInit is called when the app is initialized.
    */
@@ -20,6 +21,7 @@ class MyApp extends Homey.App {
 
     // });
   }
+
 }
 
 module.exports = MyApp;

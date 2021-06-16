@@ -1,11 +1,11 @@
-describe("MyDevice", () => {
-  describe("onInit", () => {
+describe('MyDevice', () => {
+  describe('onInit', () => {
     // this.log('MyDevice has been initialized');
   });
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
-  describe("onAdded", () => {
+  describe('onAdded', () => {
     // this.log('MyDevice has been added');
   });
   /**
@@ -16,7 +16,7 @@ describe("MyDevice", () => {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-  describe("onSettings", () => {
+  describe('onSettings', () => {
     // this.log('MyDevice settings where changed');
   });
 
@@ -25,14 +25,14 @@ describe("MyDevice", () => {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  describe("onRenamed", () => {
+  describe('onRenamed', () => {
     // this.log('MyDevice was renamed');
   });
 
   /**
    * onDeleted is called when the user deleted the device.
    */
-  describe("onDeleted", () => {
+  describe('onDeleted', () => {
     // this.log('MyDevice has been deleted');
   });
-})
+});

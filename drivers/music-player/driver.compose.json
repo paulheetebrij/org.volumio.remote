@@ -1,7 +1,7 @@
 {
   "name": {
-    "en": "Music Player",
-    "nl": "Muziek Speler"
+    "en": "Volumio Audio Player",
+    "nl": "Volumio Audio Speler"
   },
   "class": "speaker",
   "capabilities": [
@@ -24,6 +24,7 @@
     "large": "/drivers/music-player/assets/images/large.png",
     "xlarge": "/drivers/music-player/assets/images/xlarge.png"
   },
+  "discovery": "volumio",
   "pair": [
     {
       "id": "list_devices",

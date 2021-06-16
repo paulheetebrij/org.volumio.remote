@@ -1,0 +1,7 @@
+{
+  "type": "mdns-sd",
+  "mdns-sd": {
+    "protocol": "tcp",
+    "name": "Volumio"
+  }
+}

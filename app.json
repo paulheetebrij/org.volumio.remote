@@ -19,7 +19,8 @@
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png"
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
     "name": "Paul Heetebrij"
@@ -65,8 +66,8 @@
   "drivers": [
     {
       "name": {
-        "en": "Music Player",
-        "nl": "Muziek Speler"
+        "en": "Volumio Audio Player",
+        "nl": "Volumio Audio Speler"
       },
       "class": "speaker",
       "capabilities": [
@@ -89,6 +90,7 @@
         "large": "/drivers/music-player/assets/images/large.png",
         "xlarge": "/drivers/music-player/assets/images/xlarge.png"
       },
+      "discovery": "volumio",
       "pair": [
         {
           "id": "list_devices",
@@ -107,5 +109,14 @@
       ],
       "id": "music-player"
     }
-  ]
+  ],
+  "discovery": {
+    "volumio": {
+      "type": "mdns-sd",
+      "mdns-sd": {
+        "protocol": "tcp",
+        "name": "Volumio"
+      }
+    }
+  }
 }

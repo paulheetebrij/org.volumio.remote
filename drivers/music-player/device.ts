@@ -1,5 +1,6 @@
-import { Device } from 'homey';
+import Homey from 'homey';
 import fetch from 'node-fetch';
+
 interface IPlayerState {
   status: string,
   position: number,
@@ -20,13 +21,19 @@ interface IPlayerState {
   updatedb: boolean,
   volatile: boolean,
   service: string,
-};
+}
 
-class MyDevice extends Device {
+class MyDevice extends Homey.Device {
+
+  private _image: Homey.Image = new Homey.Image();
+  private get image(): Homey.Image {
+    return this._image;
+  }
+
   private _poller: any;
   private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
     if (!this._poller) {
-      this._poller == setInterval(pollingFunction, 2000);
+      this._poller === setInterval(pollingFunction, 2000);
     }
     return this._poller as NodeJS.Timeout;
   }
@@ -41,57 +48,63 @@ class MyDevice extends Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('MyDevice has been initialized');
-    // await this.setAlbumArtImage(this.image).catch(this.error);
+    this.log('Device init');
+    this.log('Name:', this.getName());
+    this.log('Class:', this.getClass());
 
     try {
       await this.pinger();
     } catch (err) {
-      this.setUnavailable(this.homey.__("volumioDeviceUnavailable"));
+      this.error(JSON.stringify(err));
+      this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
     }
 
     this.poller(() => this.getPlayerState()
       .then(
         r => this.setAvailable(),
-        e => this.setUnavailable(this.homey.__("volumioDeviceUnavailable"))));
+        err => {
+          this.error(JSON.stringify(err));
+          this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
+        },
+      ));
 
-    this.registerCapabilityListener("speaker_prev", async (value: any) => {
-      this.log("speaker_prev", value);
+    this.registerCapabilityListener('speaker_prev', async (value: any) => {
+      this.log('speaker_prev', value);
       await this.previous();
     });
 
-    this.registerCapabilityListener("speaker_next", async (value: any) => {
-      this.log("speaker_next", value);
+    this.registerCapabilityListener('speaker_next', async (value: any) => {
+      this.log('speaker_next', value);
       await this.next();
     });
 
-    this.registerCapabilityListener("speaker_playing", async (value: any) => {
-      this.log("speaker_playing", value);
+    this.registerCapabilityListener('speaker_playing', async (value: any) => {
+      this.log('speaker_playing', value);
       await (value ? this.play() : this.pause()).catch(this.error);
     });
 
-    this.registerCapabilityListener("volume_set", async (value: any) => {
-      this.log("volume_set", value);
+    this.registerCapabilityListener('volume_set', async (value: any) => {
+      this.log('volume_set', value);
       await this.setVolume(value * 100).catch(this.error);
     });
 
-    this.registerCapabilityListener("volume_down", async (value: any) => {
-      this.log("volume_down", value);
+    this.registerCapabilityListener('volume_down', async (value: any) => {
+      this.log('volume_down', value);
       await this.decreaseVolume().catch(this.error);
     });
 
-    this.registerCapabilityListener("volume_mute", async (value: any) => {
-      this.log("volume_mute", value);
+    this.registerCapabilityListener('volume_mute', async (value: any) => {
+      this.log('volume_mute', value);
       await (value ? this.mute() : this.unmute()).catch(this.error);
     });
 
-    this.registerCapabilityListener("volume_up", async (value: any) => {
-      this.log("volume_up", value);
+    this.registerCapabilityListener('volume_up', async (value: any) => {
+      this.log('volume_up', value);
       await this.increaseVolume().catch(this.error);
     });
 
-    this.registerCapabilityListener("speaker_shuffle", async (value: any) => {
-      this.log("speaker_shuffle", value);
+    this.registerCapabilityListener('speaker_shuffle', async (value: any) => {
+      this.log('speaker_shuffle', value);
       await this.shuffle(value);
     });
 
@@ -106,29 +119,25 @@ class MyDevice extends Device {
    */
   async onAdded() {
     this.log('MyDevice has been added');
+
   }
 
-  private _ip: string = "http://192.168.178.26";
   private get ip(): string {
-    return this._ip;
-  }
-  private set ip(value: string) {
-    this._ip = value;
+    return this.getStoreValue("address");
   }
 
   async pinger(): Promise<void> {
     const response = await fetch(`${this.ip}/api/v1/ping`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
-      throw new Error(this.homey.__("pingError"));
+      throw new Error(this.homey.__('pingError'));
     }
   }
 
   async getPlayerState(): Promise<void> {
     const response = await fetch(`${this.ip}/api/v1/getState`);
     if (!response.ok) {
-      this.log(JSON.stringify(response));
-      throw new Error(this.homey.__("volumioPlayerError"));
+      throw new Error(this.homey.__('volumioPlayerError'));
     }
     const state = await response.json();
     await this.setPlayerState(state as IPlayerState);
@@ -137,41 +146,41 @@ class MyDevice extends Device {
   async isPlaying(): Promise<boolean> {
     const response = await fetch(`${this.ip}/api/v1/getState`);
     if (!response.ok) {
-      throw new Error(this.homey.__("volumioPlayerError"));
+      throw new Error(this.homey.__('volumioPlayerError'));
     }
     const { status } = await response.json();
-    return status === "playing";
+    return status === 'playing';
   }
 
   private async apiCommandCall(routeArguments: string): Promise<void> {
     const response = await fetch(`${this.ip}/api/v1/commands/?${routeArguments}`);
     if (!response.ok) {
-      throw new Error(this.homey.__("volumioPlayerError"));
+      throw new Error(this.homey.__('volumioPlayerError'));
     }
   }
 
   async play(): Promise<void> {
-    await this.apiCommandCall("cmd=play");
+    await this.apiCommandCall('cmd=play');
   }
 
   async toggle(): Promise<void> {
-    await this.apiCommandCall("cmd=toggle");
+    await this.apiCommandCall('cmd=toggle');
   }
 
   async pause(): Promise<void> {
-    await this.apiCommandCall("cmd=pause");
+    await this.apiCommandCall('cmd=pause');
   }
 
   async stop(): Promise<void> {
-    await this.apiCommandCall("cmd=stop");
+    await this.apiCommandCall('cmd=stop');
   }
 
   async next(): Promise<void> {
-    await this.apiCommandCall("cmd=next").then(_ => this.getPlayerState());
+    await this.apiCommandCall('cmd=next').then(_ => this.getPlayerState());
   }
 
   async previous(): Promise<void> {
-    await this.apiCommandCall("cmd=prev").then(_ => this.getPlayerState());
+    await this.apiCommandCall('cmd=prev').then(_ => this.getPlayerState());
   }
 
   async shuffle(value: boolean): Promise<void> {
@@ -193,19 +202,19 @@ class MyDevice extends Device {
   }
 
   async increaseVolume(): Promise<void> {
-    await this.apiCommandCall(`cmd=volume&volume=plus`);
+    await this.apiCommandCall('cmd=volume&volume=plus');
   }
 
   async decreaseVolume(): Promise<void> {
-    await this.apiCommandCall(`cmd=volume&volume=minus`);
+    await this.apiCommandCall('cmd=volume&volume=minus');
   }
 
   async mute(): Promise<void> {
-    await this.apiCommandCall(`cmd=volume&volume=mute`);
+    await this.apiCommandCall('cmd=volume&volume=mute');
   }
 
   async unmute(): Promise<void> {
-    await this.apiCommandCall(`cmd=volume&volume=unmute`);
+    await this.apiCommandCall('cmd=volume&volume=unmute');
   }
 
   async playList(title: string): Promise<void> {
@@ -223,15 +232,19 @@ class MyDevice extends Device {
 
   private async setPlayerState(state: IPlayerState): Promise<void> {
     // this.log(`setPlayerState ${JSON.stringify(state)}`);
-    await this.setCapabilityValue("speaker_artist", state.artist).catch(this.error);
-    await this.setCapabilityValue("speaker_album", state.album).catch(this.error);
-    await this.setCapabilityValue("speaker_track", state.title).catch(this.error);
-    await this.setCapabilityValue("speaker_duration", state.duration).catch(this.error);
-    await this.setCapabilityValue("speaker_position", state.position).catch(this.error);
-    await this.setCapabilityValue("volume_set", state.volume / 100).catch(this.error);
-    await this.setCapabilityValue("speaker_shuffle", state.random).catch(this.error);
+    await this.setCapabilityValue('speaker_artist', state.artist).catch(this.error);
+    await this.setCapabilityValue('speaker_album', state.album).catch(this.error);
+    await this.setCapabilityValue('speaker_track', state.title).catch(this.error);
+    await this.setCapabilityValue('speaker_duration', state.duration).catch(this.error);
+    await this.setCapabilityValue('speaker_position', state.position).catch(this.error);
+    await this.setCapabilityValue('volume_set', state.volume / 100).catch(this.error);
+    await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
     // this.image.setUrl(`${this.ip}${state.albumart}`);
-    // this.image.update();
+    // await this.image.update().then(_ => this.setAlbumArtImage(this.image)).catch(this.error);
+
+    // this._image.setUrl(null); // the URL must start with https://
+    // this._image.register().catch(console.error);
+
     // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ? "track" : state.repeat ? "playlist" : "none").catch(this.error);
   }
 
@@ -261,8 +274,10 @@ class MyDevice extends Device {
    */
   async onDeleted() {
     this.log('MyDevice has been deleted');
+    await this.image.unregister();
     this.clearPoller();
   }
+
 }
 
 module.exports = MyDevice;
