@@ -1,8 +1,28 @@
-import { Device, Image } from 'homey';
+import { Device } from 'homey';
 import fetch from 'node-fetch';
-import { IDeviceCapabilities, IPlayerState } from './interfaces';
+interface IPlayerState {
+  status: string,
+  position: number,
+  title: string,
+  artist: string,
+  album: string,
+  albumart: string,
+  uri: string,
+  trackType: string,
+  seek: number,
+  duration: number,
+  random: boolean,
+  repeat: boolean,
+  repeatSingle: boolean,
+  volume: number,
+  mute: boolean,
+  stream: boolean,
+  updatedb: boolean,
+  volatile: boolean,
+  service: string,
+};
 
-class MyDevice extends Device implements IDeviceCapabilities {
+class MyDevice extends Device {
   private _poller: any;
   private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
     if (!this._poller) {
@@ -130,36 +150,36 @@ class MyDevice extends Device implements IDeviceCapabilities {
     }
   }
 
-  play(): Promise<void> {
-    return this.apiCommandCall("cmd=play");
+  async play(): Promise<void> {
+    await this.apiCommandCall("cmd=play");
   }
 
-  toggle(): Promise<void> {
-    return this.apiCommandCall("cmd=toggle");
+  async toggle(): Promise<void> {
+    await this.apiCommandCall("cmd=toggle");
   }
 
-  pause(): Promise<void> {
-    return this.apiCommandCall("cmd=pause");
+  async pause(): Promise<void> {
+    await this.apiCommandCall("cmd=pause");
   }
 
-  stop(): Promise<void> {
-    return this.apiCommandCall("cmd=stop");
+  async stop(): Promise<void> {
+    await this.apiCommandCall("cmd=stop");
   }
 
-  next(): Promise<void> {
-    return this.apiCommandCall("cmd=next").then(_ => this.getPlayerState());
+  async next(): Promise<void> {
+    await this.apiCommandCall("cmd=next").then(_ => this.getPlayerState());
   }
 
-  previous(): Promise<void> {
-    return this.apiCommandCall("cmd=prev").then(_ => this.getPlayerState());
+  async previous(): Promise<void> {
+    await this.apiCommandCall("cmd=prev").then(_ => this.getPlayerState());
   }
 
-  shuffle(value: boolean): Promise<void> {
-    return this.apiCommandCall(`cmd=random&value=${value}`);
+  async shuffle(value: boolean): Promise<void> {
+    await this.apiCommandCall(`cmd=random&value=${value}`);
   }
 
-  repeat(value: boolean): Promise<void> {
-    return this.apiCommandCall(`cmd=repeat&value=${value}`);
+  async repeat(value: boolean): Promise<void> {
+    await this.apiCommandCall(`cmd=repeat&value=${value}`);
   }
 
   // ** Seek ** seek N(N is the time in seconds that the playback will keep)
@@ -168,28 +188,28 @@ class MyDevice extends Device implements IDeviceCapabilities {
 
   // search {value:'query'}
 
-  setVolume(value: number): Promise<void> {
-    return this.apiCommandCall(`cmd=volume&volume=${value}`);
+  async setVolume(value: number): Promise<void> {
+    await this.apiCommandCall(`cmd=volume&volume=${value}`);
   }
 
-  increaseVolume(): Promise<void> {
-    return this.apiCommandCall(`cmd=volume&volume=plus`);
+  async increaseVolume(): Promise<void> {
+    await this.apiCommandCall(`cmd=volume&volume=plus`);
   }
 
-  decreaseVolume(): Promise<void> {
-    return this.apiCommandCall(`cmd=volume&volume=minus`);
+  async decreaseVolume(): Promise<void> {
+    await this.apiCommandCall(`cmd=volume&volume=minus`);
   }
 
-  mute(): Promise<void> {
-    return this.apiCommandCall(`cmd=volume&volume=mute`);
+  async mute(): Promise<void> {
+    await this.apiCommandCall(`cmd=volume&volume=mute`);
   }
 
-  unmute(): Promise<void> {
-    return this.apiCommandCall(`cmd=volume&volume=unmute`);
+  async unmute(): Promise<void> {
+    await this.apiCommandCall(`cmd=volume&volume=unmute`);
   }
 
-  playList(title: string) {
-    return this.apiCommandCall(`cmd=playplaylist&name=${title}`);
+  async playList(title: string): Promise<void> {
+    await this.apiCommandCall(`cmd=playplaylist&name=${title}`);
   }
 
   // private get image(): Image {

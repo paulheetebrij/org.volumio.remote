@@ -1,68 +1,7 @@
 {
   "actions": [
     {
-      "id": "play",
-      "title": {
-        "en": "play",
-        "nl": "afspelen"
-      }
-    },
-    {
-      "id": "stop",
-      "title": {
-        "en": "stop",
-        "nl": "stoppen"
-      }
-    },
-    {
-      "id": "pause-player",
-      "title": {
-        "en": "pause",
-        "nl": "pauzeren"
-      }
-    },
-    {
-      "id": "next-track",
-      "title": {
-        "en": "Next",
-        "nl": "Volgende"
-      }
-    },
-    {
-      "id": "previous-track",
-      "title": {
-        "en": "Previous",
-        "nl": "Vorige"
-      }
-    },
-    {
-      "id": "shuffle-on",
-      "title": {
-        "en": "Shuffle on",
-        "nl": "Willekeurig aan"
-      }
-    },
-    {
-      "id": "shuffle-off",
-      "title": {
-        "en": "Shuffle off",
-        "nl": "Willekeurig uit"
-      }
-    },
-    {
-      "id": "toggle-repeat",
-      "title": {
-        "en": "toggle repeat"
-      }
-    },
-    {
-      "id": "toggle-shuffle",
-      "title": {
-        "en": "toggle shuffle"
-      }
-    },
-    {
-      "id": "play-list",
+      "id": "play-playlist",
       "title": {
         "en": "Play playlist",
         "nl": "Speel afspeellijst af"
@@ -81,53 +20,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "set-volume",
-      "title": {
-        "en": "Set volume",
-        "nl": "Pas geluidssterkte aan"
-      },
-      "titleFormatted": {
-        "en": "Volume to [[level]]%",
-        "nl": "Geluidssterkte naar [[level]]%"
-      },
-      "args": [
-        {
-          "type": "number",
-          "name": "level",
-          "placeholder": {
-            "en": "level",
-            "nl": "niveau"
-          },
-          "min": 0,
-          "max": 100,
-          "step": 1
-        }
-      ]
-    },
-    {
-      "id": "mute",
-      "title": {
-        "en": "mute",
-        "nl": "stil"
-      }
-    },
-    {
-      "id": "unmute",
-      "title": {
-        "en": "unmute",
-        "nl": "niet stil"
-      }
-    }
-  ],
-  "conditions": [
-    {
-      "id": "is-playing",
-      "title": {
-        "en": "!{{Is|Isn't}} playing",
-        "nl": "Is !{{aan|niet aan}} het afspelen"
-      }
     }
   ]
 }
