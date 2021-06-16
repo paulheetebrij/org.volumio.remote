@@ -4,11 +4,14 @@
   "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
+  "brandColor": "#11100f",
   "name": {
-    "en": "Volumio"
+    "en": "Volumio",
+    "nl": "Volumio"
   },
   "description": {
-    "en": "Bestuur je Volumio speler met Homey"
+    "en": "Control your Volumio player with Homey",
+    "nl": "Bestuur je Volumio speler met Homey"
   },
   "category": [
     "music"
@@ -16,12 +19,19 @@
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png",
-    "xlarge": "/assets/images/xlarge.png"
+    "large": "/assets/images/large.png"
   },
   "author": {
     "name": "Paul Heetebrij"
   },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "http://paypal.me/paulheetebrij"
+      }
+    }
+  },
+  "source": "https://github.com/paulheetebrij/org.volumio.remote",
   "flow": {
     "conditions": [
       {
@@ -165,12 +175,38 @@
         ]
       },
       {
+        "id": "play-list",
+        "title": {
+          "en": "Play playlist",
+          "nl": "Speel afspeellijst af"
+        },
+        "titleFormatted": {
+          "en": "Play playlist [[title]]",
+          "nl": "Speel afspeellijst [[title]] af"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "text",
+            "name": "title",
+            "placeholder": {
+              "en": "title",
+              "nl": "titel"
+            }
+          }
+        ]
+      },
+      {
         "id": "set-volume",
         "title": {
           "en": "Set volume",
           "nl": "Pas geluidssterkte aan"
         },
-        "titleformatted": {
+        "titleFormatted": {
           "en": "Volume to [[level]]%",
           "nl": "Geluidssterkte naar [[level]]%"
         },
@@ -256,6 +292,9 @@
           "template": "list_devices",
           "navigation": {
             "next": "add_devices"
+          },
+          "options": {
+            "singular": true
           }
         },
         {

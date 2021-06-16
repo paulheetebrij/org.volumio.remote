@@ -77,8 +77,14 @@ class MyDriver extends Driver {
       const { device } = args;
       await (device as IDeviceCapabilities).unmute().catch(this.error);
     });
-  }
 
+    const cardActionPlayList = this.homey.flow.getActionCard('play-list');
+    cardActionPlayList.registerRunListener(async (args: any) => {
+      this.log(`play-list => ${JSON.stringify(args)}`);
+      const { device, title } = args;
+      await (device as IDeviceCapabilities).playList(title).catch(this.error);
+    });
+  }
   /**
    * onPairListDevices is called when a user is adding a device and the 'list_devices' view is called.
    * This should return an array with the data of devices that are available for pairing.

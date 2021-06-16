@@ -62,12 +62,33 @@
       }
     },
     {
+      "id": "play-list",
+      "title": {
+        "en": "Play playlist",
+        "nl": "Speel afspeellijst af"
+      },
+      "titleFormatted": {
+        "en": "Play playlist [[title]]",
+        "nl": "Speel afspeellijst [[title]] af"
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "title",
+          "placeholder": {
+            "en": "title",
+            "nl": "titel"
+          }
+        }
+      ]
+    },
+    {
       "id": "set-volume",
       "title": {
         "en": "Set volume",
         "nl": "Pas geluidssterkte aan"
       },
-      "titleformatted": {
+      "titleFormatted": {
         "en": "Volume to [[level]]%",
         "nl": "Geluidssterkte naar [[level]]%"
       },

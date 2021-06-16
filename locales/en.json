@@ -1,4 +1,5 @@
 {
   "pingError": "Ping returns error",
-  "volumioPlayerError": "Volumio player returns error"
+  "volumioPlayerError": "Volumio player returns error",
+  "volumioDeviceUnavailable": "Volumio player does not respond"
 }

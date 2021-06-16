@@ -35,4 +35,5 @@ export interface IDeviceCapabilities {
   mute(): Promise<void>;
   unmute(): Promise<void>;
   isPlaying(): Promise<boolean>;
+  playList(title: string): Promise<void>;
 }
