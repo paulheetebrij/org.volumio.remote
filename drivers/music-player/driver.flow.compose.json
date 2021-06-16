@@ -1,54 +1,4 @@
 {
-  "triggers": [
-    {
-      "id": "the-status-has-been-changed",
-      "title": {
-        "en": "the status has been changed"
-      },
-      "tokens": [
-        {
-          "type": "string",
-          "name": "status",
-          "title": {
-            "en": "status"
-          },
-          "example": {
-            "en": "playing status of the music-player"
-          }
-        },
-        {
-          "type": "string",
-          "name": "track",
-          "title": {
-            "en": "track"
-          },
-          "example": {
-            "en": "The current track"
-          }
-        },
-        {
-          "type": "string",
-          "name": "artist",
-          "title": {
-            "en": "artist"
-          },
-          "example": {
-            "en": "The current artist"
-          }
-        },
-        {
-          "type": "string",
-          "name": "album",
-          "title": {
-            "en": "album"
-          },
-          "example": {
-            "en": "The current album"
-          }
-        }
-      ]
-    }
-  ],
   "actions": [
     {
       "id": "play",
@@ -72,6 +22,34 @@
       }
     },
     {
+      "id": "next-track",
+      "title": {
+        "en": "Next",
+        "nl": "Volgende"
+      }
+    },
+    {
+      "id": "previous-track",
+      "title": {
+        "en": "Previous",
+        "nl": "Vorige"
+      }
+    },
+    {
+      "id": "shuffle-on",
+      "title": {
+        "en": "Shuffle on",
+        "nl": "Willekeurig aan"
+      }
+    },
+    {
+      "id": "shuffle-off",
+      "title": {
+        "en": "Shuffle off",
+        "nl": "Willekeurig uit"
+      }
+    },
+    {
       "id": "toggle-repeat",
       "title": {
         "en": "toggle repeat"
@@ -86,8 +64,12 @@
     {
       "id": "set-volume",
       "title": {
-        "en": "set volume",
-        "nl": "pas geluidssterkte aan"
+        "en": "Set volume",
+        "nl": "Pas geluidssterkte aan"
+      },
+      "titleformatted": {
+        "en": "Volume to [[level]]%",
+        "nl": "Geluidssterkte naar [[level]]%"
       },
       "args": [
         {
@@ -115,6 +97,15 @@
       "title": {
         "en": "unmute",
         "nl": "niet stil"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "is-playing",
+      "title": {
+        "en": "!{{Is|Isn't}} playing",
+        "nl": "Is !{{aan|niet aan}} het afspelen"
       }
     }
   ]

@@ -20,58 +20,16 @@
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
-    "name": "Paul Heetebrij",
-    "email": "paul.heetebrij@freedom.nl"
+    "name": "Paul Heetebrij"
   },
   "flow": {
-    "triggers": [
+    "conditions": [
       {
-        "id": "the-status-has-been-changed",
+        "id": "is-playing",
         "title": {
-          "en": "the status has been changed"
+          "en": "!{{Is|Isn't}} playing",
+          "nl": "Is !{{aan|niet aan}} het afspelen"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "status",
-            "title": {
-              "en": "status"
-            },
-            "example": {
-              "en": "playing status of the music-player"
-            }
-          },
-          {
-            "type": "string",
-            "name": "track",
-            "title": {
-              "en": "track"
-            },
-            "example": {
-              "en": "The current track"
-            }
-          },
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "artist"
-            },
-            "example": {
-              "en": "The current artist"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "album"
-            },
-            "example": {
-              "en": "The current album"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",
@@ -125,6 +83,62 @@
         ]
       },
       {
+        "id": "next-track",
+        "title": {
+          "en": "Next",
+          "nl": "Volgende"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "previous-track",
+        "title": {
+          "en": "Previous",
+          "nl": "Vorige"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "shuffle-on",
+        "title": {
+          "en": "Shuffle on",
+          "nl": "Willekeurig aan"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "shuffle-off",
+        "title": {
+          "en": "Shuffle off",
+          "nl": "Willekeurig uit"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
         "id": "toggle-repeat",
         "title": {
           "en": "toggle repeat"
@@ -153,8 +167,12 @@
       {
         "id": "set-volume",
         "title": {
-          "en": "set volume",
-          "nl": "pas geluidssterkte aan"
+          "en": "Set volume",
+          "nl": "Pas geluidssterkte aan"
+        },
+        "titleformatted": {
+          "en": "Volume to [[level]]%",
+          "nl": "Geluidssterkte naar [[level]]%"
         },
         "args": [
           {
@@ -208,7 +226,8 @@
   "drivers": [
     {
       "name": {
-        "en": "Music Player"
+        "en": "Music Player",
+        "nl": "Muziek Speler"
       },
       "class": "speaker",
       "capabilities": [
@@ -218,6 +237,7 @@
         "speaker_duration",
         "speaker_playing",
         "speaker_position",
+        "speaker_shuffle",
         "speaker_prev",
         "speaker_next",
         "volume_set",

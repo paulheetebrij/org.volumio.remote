@@ -1,1 +1,4 @@
-{}
+{
+  "pingError": "Ping geeft fout",
+  "volumioPlayerError": "Volumio speler geeft fout"
+}

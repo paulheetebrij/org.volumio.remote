@@ -1,29 +1,8 @@
 import { Device } from 'homey';
 import fetch from 'node-fetch';
+import { IDeviceCapabilities, IPlayerState } from './interfaces';
 
-interface IPlayerState {
-  status: string,
-  position: number,
-  title: string,
-  artist: string,
-  album: string,
-  albumart: string,
-  uri: string,
-  trackType: string,
-  seek: number,
-  duration: number,
-  random: boolean,
-  repeat: boolean,
-  repeatSingle: boolean,
-  volume: number,
-  mute: boolean,
-  stream: boolean,
-  updatedb: boolean,
-  volatile: boolean,
-  service: string,
-};
-
-class MyDevice extends Device {
+class MyDevice extends Device implements IDeviceCapabilities {
   private _poller: any;
   private poller(func: () => Promise<void>): NodeJS.Timeout {
     if (!this._poller) {
@@ -66,7 +45,7 @@ class MyDevice extends Device {
 
     this.registerCapabilityListener("volume_set", async (value: any) => {
       this.log("volume_set", value);
-      await this.setVolume(value).catch(this.error);
+      await this.setVolume(value * 100).catch(this.error);
     });
 
     this.registerCapabilityListener("volume_down", async (value: any) => {
@@ -89,10 +68,10 @@ class MyDevice extends Device {
       await this.shuffle(value);
     });
 
-    this.registerCapabilityListener("speaker_repeat", async (value: any) => {
-      this.log("speaker_repeat", value);// track playlist none
-      await this.repeat(value);
-    });
+    // this.registerCapabilityListener("speaker_repeat", async (value: any) => {
+    //   this.log("speaker_repeat", value);// track playlist none
+    //   await this.repeat(value !== "none");
+    // });
   }
 
   /**
@@ -114,53 +93,65 @@ class MyDevice extends Device {
     this.log(`pinger`);
     const response = await fetch(`${this.ip}/api/v1/ping`);
     if (!response.ok) {
-      throw new Error(`Volumio request error`);
+      throw new Error(this.homey.__("pingError"));
     }
-    const state = await response;
-    this.log(JSON.stringify(state));
   }
 
   async getPlayerState(): Promise<void> {
     const response = await fetch(`${this.ip}/api/v1/getState`);
     if (!response.ok) {
-      throw new Error(`getPlayerState: Volumio request error`);
+      throw new Error(this.homey.__("volumioPlayerError"));
     }
     const state = await response.json();
     await this.setPlayerState(state as IPlayerState);
   }
 
-  async play(): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=play`);
+  async isPlaying(): Promise<boolean> {
+    const response = await fetch(`${this.ip}/api/v1/getState`);
+    if (!response.ok) {
+      throw new Error(this.homey.__("volumioPlayerError"));
+    }
+    const { status } = await response.json();
+    return status === "playing";
   }
 
-  async toggle(): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=toggle`);
+  private async apiCommandCall(routeArguments: string): Promise<void> {
+    const response = await fetch(`${this.ip}/api/v1/commands/?${routeArguments}`);
+    if (!response.ok) {
+      throw new Error(this.homey.__("volumioPlayerError"));
+    }
   }
 
-  async pause(): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=pause`);
+  play(): Promise<void> {
+    return this.apiCommandCall("cmd=play");
   }
 
-  async stop(): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=stop`);
+  toggle(): Promise<void> {
+    return this.apiCommandCall("cmd=toggle");
   }
 
-  async next(): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=next`);
-    await this.getPlayerState();
+  pause(): Promise<void> {
+    return this.apiCommandCall("cmd=pause");
   }
 
-  async previous(): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=prev`);
-    await this.getPlayerState();
+  stop(): Promise<void> {
+    return this.apiCommandCall("cmd=stop");
   }
 
-  async shuffle(value: boolean): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=random&value=${value}`);
+  next(): Promise<void> {
+    return this.apiCommandCall("cmd=next").then(_ => this.getPlayerState());
   }
 
-  async repeat(value: string): Promise<void> {
-    await fetch(`${this.ip}/api/v1/commands/?cmd=random&random=${value !== "none"}`);
+  previous(): Promise<void> {
+    return this.apiCommandCall("cmd=prev").then(_ => this.getPlayerState());
+  }
+
+  shuffle(value: boolean): Promise<void> {
+    return this.apiCommandCall(`cmd=random&value=${value}`);
+  }
+
+  repeat(value: boolean): Promise<void> {
+    return this.apiCommandCall(`cmd=repeat&value=${value}`);
   }
 
   // ** Seek ** seek N(N is the time in seconds that the playback will keep)
@@ -169,52 +160,27 @@ class MyDevice extends Device {
 
   // search {value:'query'}
 
-  async setVolume(value: number): Promise<void> {
-    this.log(`setVolume ${value}`);
-    await fetch(`${this.ip}/api/v1/commands/?cmd=volume&volume=${value * 100}`);
+  setVolume(value: number): Promise<void> {
+    return this.apiCommandCall(`cmd=volume&volume=${value}`);
   }
 
-  async increaseVolume(): Promise<void> {
-    this.log(`increaseVolume`);
-    await fetch(`${this.ip}/api/v1/commands/?cmd=volume&volume=plus`);
+  increaseVolume(): Promise<void> {
+    return this.apiCommandCall(`cmd=volume&volume=plus`);
   }
 
-  async decreaseVolume(): Promise<void> {
-    this.log(`decreaseVolume`);
-    await fetch(`${this.ip}/api/v1/commands/?cmd=volume&volume=minus`);
+  decreaseVolume(): Promise<void> {
+    return this.apiCommandCall(`cmd=volume&volume=minus`);
   }
 
   async mute(): Promise<void> {
-    this.log(`mute`);
-    await fetch(`${this.ip}/api/v1/commands/?cmd=volume&volume=mute`);
+    return this.apiCommandCall(`cmd=volume&volume=mute`);
   }
 
   async unmute(): Promise<void> {
-    this.log(`unmute`);
-    await fetch(`${this.ip}/api/v1/commands/?cmd=volume&volume=unmute`);
+    return this.apiCommandCall(`cmd=volume&volume=unmute`);
   }
 
-  async setPlayerState(state: {
-    status: string,
-    position: number,
-    title: string,
-    artist: string,
-    album: string,
-    albumart: string,
-    uri: string,
-    trackType: string,
-    seek: number,
-    duration: number,
-    random: boolean,
-    repeat: boolean,
-    repeatSingle: boolean,
-    volume: number,
-    mute: boolean,
-    stream: boolean,
-    updatedb: boolean,
-    volatile: boolean,
-    service: string,
-  }): Promise<void> {
+  private async setPlayerState(state: IPlayerState): Promise<void> {
     // this.log(`setPlayerState ${JSON.stringify(state)}`);
     await this.setCapabilityValue("speaker_artist", state.artist).catch(this.error);
     await this.setCapabilityValue("speaker_album", state.album).catch(this.error);
@@ -222,7 +188,7 @@ class MyDevice extends Device {
     await this.setCapabilityValue("speaker_duration", state.duration).catch(this.error);
     await this.setCapabilityValue("speaker_position", state.position).catch(this.error);
     await this.setCapabilityValue("volume_set", state.volume / 100).catch(this.error);
-    // await this.setCapabilityValue("speaker_shuffle", state.random).catch(this.error);
+    await this.setCapabilityValue("speaker_shuffle", state.random).catch(this.error);
     // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ? "track" : state.repeat ? "playlist" : "none").catch(this.error);
   }
 

@@ -4,10 +4,12 @@
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "name": {
-    "en": "Volumio"
+    "en": "Volumio",
+    "nl": "Volumio"
   },
   "description": {
-    "en": "Bestuur je Volumio speler met Homey"
+    "en": "Control your Volumio player with Homey",
+    "nl": "Bestuur je Volumio speler met Homey"
   },
   "category": [
     "music"
@@ -19,7 +21,14 @@
     "xlarge": "/assets/images/xlarge.png"
   },
   "author": {
-    "name": "Paul Heetebrij",
-    "email": "paul.heetebrij@freedom.nl"
-  }
+    "name": "Paul Heetebrij"
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "http://paypal.me/paulheetebrij"
+      }
+    }
+  },
+  "source": "https://github.com/paulheetebrij/org.volumio.remote"
 }

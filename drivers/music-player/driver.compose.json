@@ -1,6 +1,7 @@
 {
   "name": {
-    "en": "Music Player"
+    "en": "Music Player",
+    "nl": "Muziek Speler"
   },
   "class": "speaker",
   "capabilities": [
@@ -10,6 +11,7 @@
     "speaker_duration",
     "speaker_playing",
     "speaker_position",
+    "speaker_shuffle",
     "speaker_prev",
     "speaker_next",
     "volume_set",
@@ -28,6 +30,9 @@
       "template": "list_devices",
       "navigation": {
         "next": "add_devices"
+      },
+      "options": {
+        "singular": true
       }
     },
     {
