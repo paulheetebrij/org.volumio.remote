@@ -1,5 +1,5 @@
-import sourceMapSupport from 'source-map-support';
-import Homey from 'homey';
+import sourceMapSupport from 'source-map-support'; // eslint-disable-line node/no-unsupported-features/es-syntax
+import Homey from 'homey'; // eslint-disable-line
 
 sourceMapSupport.install();
 

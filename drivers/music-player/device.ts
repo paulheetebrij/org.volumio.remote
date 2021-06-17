@@ -1,5 +1,5 @@
-import Homey from 'homey';
-import fetch from 'node-fetch';
+import Homey from 'homey'; // eslint-disable-line
+import fetch from 'node-fetch'; // eslint-disable-line
 
 interface IPlayerState {
   status: string,
@@ -24,6 +24,7 @@ interface IPlayerState {
 }
 
 class MyDevice extends Homey.Device {
+
   /**
    * onInit is called when the device is initialized.
    */
@@ -42,49 +43,49 @@ class MyDevice extends Homey.Device {
 
     this.poller(() => this.getPlayerState()
       .then(
-        r => this.setAvailable(),
+        () => this.setAvailable(),
         err => {
           this.error(JSON.stringify(err));
           this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
         },
       ));
 
-    this.registerCapabilityListener('speaker_prev', async (value: any) => {
+    this.registerCapabilityListener('speaker_prev', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_prev', value);
       await this.previous();
     });
 
-    this.registerCapabilityListener('speaker_next', async (value: any) => {
+    this.registerCapabilityListener('speaker_next', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_next', value);
       await this.next();
     });
 
-    this.registerCapabilityListener('speaker_playing', async (value: any) => {
+    this.registerCapabilityListener('speaker_playing', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_playing', value);
       await (value ? this.play() : this.pause()).catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_set', async (value: any) => {
+    this.registerCapabilityListener('volume_set', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_set', value);
       await this.setVolume(value * 100).catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_down', async (value: any) => {
+    this.registerCapabilityListener('volume_down', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_down', value);
       await this.decreaseVolume().catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_mute', async (value: any) => {
+    this.registerCapabilityListener('volume_mute', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_mute', value);
       await (value ? this.mute() : this.unmute()).catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_up', async (value: any) => {
+    this.registerCapabilityListener('volume_up', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_up', value);
       await this.increaseVolume().catch(this.error);
     });
 
-    this.registerCapabilityListener('speaker_shuffle', async (value: any) => {
+    this.registerCapabilityListener('speaker_shuffle', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_shuffle', value);
       await this.shuffle(value);
     });
@@ -100,11 +101,10 @@ class MyDevice extends Homey.Device {
    */
   async onAdded() {
     this.log('MyDevice has been added');
-
   }
 
   private get ip(): string {
-    return this.getStoreValue("address");
+    return this.getStoreValue('address');
   }
 
   async pinger(): Promise<void> {
@@ -160,11 +160,11 @@ class MyDevice extends Homey.Device {
   }
 
   async next(): Promise<void> {
-    await this.apiCommandCall('cmd=next').then(_ => this.getPlayerState());
+    await this.apiCommandCall('cmd=next').then(() => this.getPlayerState());
   }
 
   async previous(): Promise<void> {
-    await this.apiCommandCall('cmd=prev').then(_ => this.getPlayerState());
+    await this.apiCommandCall('cmd=prev').then(() => this.getPlayerState());
   }
 
   async shuffle(value: boolean): Promise<void> {
@@ -215,12 +215,13 @@ class MyDevice extends Homey.Device {
     await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
     await this.setAlbumArtwork(state.albumart);
 
-    // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ? "track" : state.repeat ? "playlist" : "none").catch(this.error);
+    // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ?
+    // "track" : state.repeat ? "playlist" : "none").catch (this.error);
   }
 
   private async setAlbumArtwork(imageUrl?: string): Promise<void> {
-    const loadImage = async (image: any, url: string) => {
-      await image.setStream(async (stream: any) => {
+    const loadImage = async (image: any, url: string) => { // eslint-disable-line
+      await image.setStream(async (stream: any) => { // eslint-disable-line
         const response = await fetch(url);
         if (!response.ok) {
           this.log(JSON.stringify(response));
@@ -228,7 +229,7 @@ class MyDevice extends Homey.Device {
         }
         return response.body.pipe(stream);
       });
-    }
+    };
     try {
       const fullImageUrl = `${this.ip}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
       const image = await this.getImage();
@@ -249,23 +250,26 @@ class MyDevice extends Homey.Device {
 
   private async getImage(): Promise<Homey.Image> {
     if (!this._image) {
-      this._image = await this.homey.images.createImage()
+      this._image = await this.homey.images.createImage();
     }
     return this._image;
   }
+
   private set fullImageUrl(value: string) {
     this._fullImageUrl = value;
   }
+
   private get fullImageUrl(): string {
     return this._fullImageUrl;
   }
-  private _image: any;
-  private _fullImageUrl: any;
 
-  private _poller: any;
+  private _image: any;// eslint-disable-line @typescript-eslint/no-explicit-any
+  private _fullImageUrl: any;// eslint-disable-line @typescript-eslint/no-explicit-any
+
+  private _poller: any;// eslint-disable-line @typescript-eslint/no-explicit-any
   private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
     if (!this._poller) {
-      this._poller === setInterval(pollingFunction, 2000);
+      this._poller === setInterval(pollingFunction, 2000); // eslint-disable-line
     }
     return this._poller as NodeJS.Timeout;
   }
@@ -284,7 +288,7 @@ class MyDevice extends Homey.Device {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
+  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> { // eslint-disable-line
     this.log('MyDevice settings where changed');
   }
 
@@ -293,7 +297,7 @@ class MyDevice extends Homey.Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  async onRenamed(name: string) {
+  async onRenamed(name: string) { // eslint-disable-line @typescript-eslint/no-unused-vars
     this.log('MyDevice was renamed');
   }
 
