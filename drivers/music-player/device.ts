@@ -24,45 +24,6 @@ interface IPlayerState {
 }
 
 class MyDevice extends Homey.Device {
-
-  private _image: any;
-  private _imageUrl: any;
-  private async getImage(): Promise<Homey.Image> {
-    if (!this._image) {
-      this._image = await this.homey.images.createImage()
-    }
-    return this._image;
-  }
-
-  private async setAlbumArtwork(imageUrl: string): Promise<void> {
-    const image = await this.getImage();
-    image.setStream(async (stream: any) => {
-      const res = await fetch(imageUrl);
-      if (!res.ok) {
-        throw new Error("Invalid Response");
-      }
-      return res.body.pipe(stream);
-    });
-    await image.update().catch(this.error);
-    if (this._imageUrl === imageUrl) return;
-    this._imageUrl = imageUrl;
-    await this.setAlbumArtImage(image).catch(this.error);
-  }
-
-  private _poller: any;
-  private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
-    if (!this._poller) {
-      this._poller === setInterval(pollingFunction, 2000);
-    }
-    return this._poller as NodeJS.Timeout;
-  }
-
-  private clearPoller(): void {
-    if (this._poller) {
-      clearInterval(this._poller);
-    }
-  }
-
   /**
    * onInit is called when the device is initialized.
    */
@@ -77,9 +38,7 @@ class MyDevice extends Homey.Device {
       this.error(JSON.stringify(err));
       this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
     }
-    const image = await this.getImage();
-    await this.setAlbumArtImage(image).catch(this.error);
-    // await image.update().then(() => this.setAlbumArtImage(image)).catch(this.error);
+    await this.setAlbumArtwork();
 
     this.poller(() => this.getPlayerState()
       .then(
@@ -159,6 +118,7 @@ class MyDevice extends Homey.Device {
   async getPlayerState(): Promise<void> {
     const response = await fetch(`${this.ip}/api/v1/getState`);
     if (!response.ok) {
+      this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
     }
     const state = await response.json();
@@ -168,6 +128,7 @@ class MyDevice extends Homey.Device {
   async isPlaying(): Promise<boolean> {
     const response = await fetch(`${this.ip}/api/v1/getState`);
     if (!response.ok) {
+      this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
     }
     const { status } = await response.json();
@@ -177,6 +138,7 @@ class MyDevice extends Homey.Device {
   private async apiCommandCall(routeArguments: string): Promise<void> {
     const response = await fetch(`${this.ip}/api/v1/commands/?${routeArguments}`);
     if (!response.ok) {
+      this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
     }
   }
@@ -251,9 +213,67 @@ class MyDevice extends Homey.Device {
     await this.setCapabilityValue('speaker_position', state.position).catch(this.error);
     await this.setCapabilityValue('volume_set', state.volume / 100).catch(this.error);
     await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
-    await this.setAlbumArtwork(`${this.ip}${state.albumart}`);
+    await this.setAlbumArtwork(state.albumart);
 
     // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ? "track" : state.repeat ? "playlist" : "none").catch(this.error);
+  }
+
+  private async setAlbumArtwork(imageUrl?: string): Promise<void> {
+    const loadImage = async (image: any, url: string) => {
+      await image.setStream(async (stream: any) => {
+        const response = await fetch(url);
+        if (!response.ok) {
+          this.log(JSON.stringify(response));
+          throw new Error(this.homey.__('volumioPlayerError'));
+        }
+        return response.body.pipe(stream);
+      });
+    }
+    try {
+      const fullImageUrl = `${this.ip}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
+      const image = await this.getImage();
+      if (this.fullImageUrl !== fullImageUrl) {
+        await loadImage(image, fullImageUrl);
+        await image.update();
+        await this.setAlbumArtImage(image);
+        this.fullImageUrl = fullImageUrl;
+      } else {
+        await loadImage(image, fullImageUrl);
+        await image.update();
+        // await this.setAlbumArtImage(image);
+      }
+    } catch (err) {
+      this.error(JSON.stringify(err));
+    }
+  }
+
+  private async getImage(): Promise<Homey.Image> {
+    if (!this._image) {
+      this._image = await this.homey.images.createImage()
+    }
+    return this._image;
+  }
+  private set fullImageUrl(value: string) {
+    this._fullImageUrl = value;
+  }
+  private get fullImageUrl(): string {
+    return this._fullImageUrl;
+  }
+  private _image: any;
+  private _fullImageUrl: any;
+
+  private _poller: any;
+  private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
+    if (!this._poller) {
+      this._poller === setInterval(pollingFunction, 2000);
+    }
+    return this._poller as NodeJS.Timeout;
+  }
+
+  private clearPoller(): void {
+    if (this._poller) {
+      clearInterval(this._poller);
+    }
   }
 
   /**
