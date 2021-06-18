@@ -38,7 +38,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
       this.error(JSON.stringify(err));
       this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
     }
-    await this.setAlbumArtwork();
+    await this.subscribeStatus();
 
     this.poller(() =>
       this.getPlayerState().then(
@@ -109,6 +109,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
   async onAdded() {
     this.log('Volumio music player has been added');
+    await this.subscribeStatus();
   }
 
   private get ip(): string {
@@ -275,6 +276,39 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   private _image: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   private _fullImageUrl: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+  private async subscribeStatus(): Promise<void> {
+    const { id } = this.getData();
+    const homeyAddress = await this.homey.cloud.getLocalAddress();
+    const homeyUrl = homeyAddress.split(':');
+    const query = `?url=http://${homeyUrl[0]}/api/app/com.volumio.remote/${id}${homeyUrl.length === 2 ? ':' + homeyUrl[1] : ''}`;
+    this.log(`subscribe status ${query}`);
+    // const response = await fetch(`${this.ip}/api/v1/pushNotificationUrls${query}`,
+    //   {
+    //     method: 'POST',
+    //     body: JSON.stringify({ url: `http://${homeyUrl[0]}/api/app/com.volumio.remote/${id}${homeyUrl.length === 2 ? ':' + homeyUrl[1] : ''}` })
+    //   });
+    // if (!response.ok) {
+    //   this.log(JSON.stringify(response));
+    //   throw new Error(this.homey.__('volumioPlayerError'));
+    // }
+  }
+
+  private async unSubscribeStatus(): Promise<void> {
+    this.log(`subscribe status ${this.getName()}`);
+    const { id } = this.getData();
+    const homeyAddress = await this.homey.cloud.getLocalAddress();
+    const homeyUrl = homeyAddress.split(':');
+    const query = `?url=http://${homeyUrl[0]}/api/app/com.volumio.remote/${id}${homeyUrl.length === 2 ? ':' + homeyUrl[1] : ''}`;
+    // const response = await fetch(`${this.ip}/api/v1/pushNotificationUrls${query}`,
+    //   {
+    //     method: 'DELETE',
+    //   });
+    // if (!response.ok) {
+    //   this.log(JSON.stringify(response));
+    //   throw new Error(this.homey.__('volumioPlayerError'));
+    // }
+  }
+
   private _poller: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
     if (!this._poller) {
@@ -299,7 +333,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
 
   /* eslint-disable no-empty-pattern */
-  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
+  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
     this.log('Volumio music player settings where changed');
   }
 
@@ -310,7 +344,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
   async onRenamed(name: string) {
     // eslint-disable-line @typescript-eslint/no-unused-vars
-    this.log('Volumio music player was renamed');
+    this.log(`Volumio music player was renamed: ${name}`);
   }
 
   /**
@@ -320,6 +354,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     this.log('Volumio music player has been deleted');
     const image = await this.getImage();
     await image.unregister();
+    await this.unSubscribeStatus();
     this.clearPoller();
   }
 }

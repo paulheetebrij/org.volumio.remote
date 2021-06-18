@@ -20,6 +20,10 @@ class VolumioApp extends Homey.App {
 
     // });
   }
+
+  async volumiostatus(deviceId: string, body: any): Promise<void> {
+    this.log(`${deviceId}, ${JSON.stringify(body)}`);
+  }
 }
 
 module.exports = VolumioApp;
