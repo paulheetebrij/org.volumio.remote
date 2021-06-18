@@ -1,15 +1,15 @@
 import Homey from 'homey'; // eslint-disable-line
 
-class VolumioAudioPlayerDriver extends Homey.Driver {
-
+class VolumioMusicPlayerDriver extends Homey.Driver {
   /**
    * onInit is called when the driver is initialized.
    */
   async onInit() {
-    this.log('Driver Volumio audio player has been initialized');
+    this.log('Driver Volumio music player has been initialized');
 
     const cardActionPlayPlaylist = this.homey.flow.getActionCard('play-playlist');
-    cardActionPlayPlaylist.registerRunListener(async (args: any) => { // eslint-disable-line
+    cardActionPlayPlaylist.registerRunListener(async (args: any) => {
+      // eslint-disable-line
       const { device, title } = args;
       await device.playList(title).catch(this.error);
     });
@@ -35,7 +35,7 @@ class VolumioAudioPlayerDriver extends Homey.Driver {
       return {
         name: txt.name,
         data: {
-          id,
+          id
         },
         store: {
           address
@@ -44,7 +44,6 @@ class VolumioAudioPlayerDriver extends Homey.Driver {
     });
     return devices;
   }
-
 }
 
-module.exports = VolumioAudioPlayerDriver;
+module.exports = VolumioMusicPlayerDriver;

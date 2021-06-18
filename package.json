@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
+    "prettier-format": "prettier --config .prettierrc '**/*.ts'",
+    "prettier-format-write": "prettier --config .prettierrc '**/*.ts' --write",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "build": "tsc",
     "test:mocha": "mocha --exit -r ts-node/register",
     "test": "npm run -s test:mocha **/*.spec.ts",
     "precm": "npm run -s build && npm run -s test",
-    "cm": "npx git-cz"
+    "cm": "npx git-cz",
+    "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}"
   },
   "engines": {
     "node": ">=12.16.1"
@@ -32,7 +35,11 @@
     "chai": "^4.3.4",
     "eslint": "^7.28.0",
     "eslint-config-athom": "^2.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "mocha": "^9.0.0",
+    "onchange": "^7.1.0",
+    "prettier": "^2.3.1",
     "sinon": "^11.1.1",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.4"

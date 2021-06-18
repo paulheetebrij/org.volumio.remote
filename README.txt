@@ -2,6 +2,6 @@ Volumio is an open source Audiophile Music Player. It is designed to play all yo
 
 And now you can control is with Homey.
 
-Besides the usual audio player features the following cards are implemented:
+Besides the standard music player features the following cards are implemented:
 - Select and play a playlist by name.
 - ...

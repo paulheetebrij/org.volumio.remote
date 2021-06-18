@@ -2,34 +2,33 @@ import Homey from 'homey'; // eslint-disable-line
 import fetch from 'node-fetch'; // eslint-disable-line
 
 interface IPlayerState {
-  status: string,
-  position: number,
-  title: string,
-  artist: string,
-  album: string,
-  albumart: string,
-  uri: string,
-  trackType: string,
-  seek: number,
-  duration: number,
-  random: boolean,
-  repeat: boolean,
-  repeatSingle: boolean,
-  volume: number,
-  mute: boolean,
-  stream: boolean,
-  updatedb: boolean,
-  volatile: boolean,
-  service: string,
+  status: string;
+  position: number;
+  title: string;
+  artist: string;
+  album: string;
+  albumart: string;
+  uri: string;
+  trackType: string;
+  seek: number;
+  duration: number;
+  random: boolean;
+  repeat: boolean;
+  repeatSingle: boolean;
+  volume: number;
+  mute: boolean;
+  stream: boolean;
+  updatedb: boolean;
+  volatile: boolean;
+  service: string;
 }
 
-class VolumioAudioPlayerDevice extends Homey.Device {
-
+class VolumioMusicPlayerDevice extends Homey.Device {
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('Volumio audio player device init');
+    this.log('Volumio music player device init');
     this.log('Name:', this.getName());
     this.log('Class:', this.getClass());
 
@@ -41,51 +40,60 @@ class VolumioAudioPlayerDevice extends Homey.Device {
     }
     await this.setAlbumArtwork();
 
-    this.poller(() => this.getPlayerState()
-      .then(
+    this.poller(() =>
+      this.getPlayerState().then(
         () => this.setAvailable(),
-        err => {
+        (err) => {
           this.error(JSON.stringify(err));
           this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
-        },
-      ));
+        }
+      )
+    );
 
-    this.registerCapabilityListener('speaker_prev', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('speaker_prev', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_prev', value);
       await this.previous();
     });
 
-    this.registerCapabilityListener('speaker_next', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('speaker_next', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_next', value);
       await this.next();
     });
 
-    this.registerCapabilityListener('speaker_playing', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('speaker_playing', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_playing', value);
       await (value ? this.play() : this.pause()).catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_set', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('volume_set', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_set', value);
       await this.setVolume(value * 100).catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_down', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('volume_down', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_down', value);
       await this.decreaseVolume().catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_mute', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('volume_mute', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_mute', value);
       await (value ? this.mute() : this.unmute()).catch(this.error);
     });
 
-    this.registerCapabilityListener('volume_up', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('volume_up', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('volume_up', value);
       await this.increaseVolume().catch(this.error);
     });
 
-    this.registerCapabilityListener('speaker_shuffle', async (value: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.registerCapabilityListener('speaker_shuffle', async (value: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       this.log('speaker_shuffle', value);
       await this.shuffle(value);
     });
@@ -100,7 +108,7 @@ class VolumioAudioPlayerDevice extends Homey.Device {
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('Volumio audio player has been added');
+    this.log('Volumio music player has been added');
   }
 
   private get ip(): string {
@@ -231,7 +239,8 @@ class VolumioAudioPlayerDevice extends Homey.Device {
     //   });
     // };
     // try {
-    //   const fullImageUrl = `${this.ip}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
+    //   const fullImageUrl = `${this.ip}${!imageUrl ||
+    // imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
     //   const image = await this.getImage();
     //   if (this.fullImageUrl !== fullImageUrl) {
     //     await loadImage(image, fullImageUrl);
@@ -263,10 +272,10 @@ class VolumioAudioPlayerDevice extends Homey.Device {
     return this._fullImageUrl;
   }
 
-  private _image: any;// eslint-disable-line @typescript-eslint/no-explicit-any
-  private _fullImageUrl: any;// eslint-disable-line @typescript-eslint/no-explicit-any
+  private _image: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private _fullImageUrl: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  private _poller: any;// eslint-disable-line @typescript-eslint/no-explicit-any
+  private _poller: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
     if (!this._poller) {
       this._poller === setInterval(pollingFunction, 2000); // eslint-disable-line
@@ -288,8 +297,10 @@ class VolumioAudioPlayerDevice extends Homey.Device {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> { // eslint-disable-line
-    this.log('Volumio audio player settings where changed');
+
+  /* eslint-disable no-empty-pattern */
+  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
+    this.log('Volumio music player settings where changed');
   }
 
   /**
@@ -297,20 +308,20 @@ class VolumioAudioPlayerDevice extends Homey.Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  async onRenamed(name: string) { // eslint-disable-line @typescript-eslint/no-unused-vars
-    this.log('Volumio audio player was renamed');
+  async onRenamed(name: string) {
+    // eslint-disable-line @typescript-eslint/no-unused-vars
+    this.log('Volumio music player was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
-    this.log('Volumio audio player has been deleted');
+    this.log('Volumio music player has been deleted');
     const image = await this.getImage();
     await image.unregister();
     this.clearPoller();
   }
-
 }
 
-module.exports = VolumioAudioPlayerDevice;
+module.exports = VolumioMusicPlayerDevice;

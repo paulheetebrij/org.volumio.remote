@@ -72,7 +72,7 @@
   "drivers": [
     {
       "name": {
-        "en": "Volumio Audio Player",
+        "en": "Volumio Music Player",
         "nl": "Volumio Audio Speler"
       },
       "class": "speaker",

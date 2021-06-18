@@ -4,7 +4,6 @@ import Homey from 'homey'; // eslint-disable-line
 sourceMapSupport.install();
 
 class VolumioApp extends Homey.App {
-
   /**
    * onInit is called when the app is initialized.
    */
