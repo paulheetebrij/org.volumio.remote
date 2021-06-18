@@ -1,4 +1,3 @@
-import { stat } from 'fs';
 import Homey from 'homey'; // eslint-disable-line
 import fetch from 'node-fetch'; // eslint-disable-line
 // interface IPushNotificationStateData {
@@ -256,8 +255,9 @@ class VolumioMusicPlayerDevice extends Homey.Device {
       });
     };
     try {
-      const fullImageUrl = `${this.ip4Address}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
-        }`;
+      const fullImageUrl = `${this.ip4Address}${
+        !imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
+      }`;
       const image = await this.getImage();
       loadImage(image, fullImageUrl);
       await image.update();
@@ -273,6 +273,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     }
     return this._image;
   }
+
   private _image: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private async subscribeStatus(): Promise<void> {
@@ -349,7 +350,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
 
   /* eslint-disable no-empty-pattern */
-  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
+  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
     this.log('Volumio music player settings where changed');
   }
 

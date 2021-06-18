@@ -5,8 +5,8 @@
   "scripts": {
     "prettier-format": "prettier --config .prettierrc '**/*.ts'",
     "prettier-format-write": "prettier --config .prettierrc '**/*.ts' --write",
-    "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix",
+    "prebuild:lint": "eslint . --ext .ts --fix",
+    "prebuild": "npm run -s prebuild:lint",
     "build": "tsc",
     "test:mocha": "mocha --exit -r ts-node/register",
     "test": "npm run -s test:mocha **/*.spec.ts",

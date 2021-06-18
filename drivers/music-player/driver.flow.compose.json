@@ -32,10 +32,10 @@
       "tokens": [
         {
           "type": "string",
-          "name": "name",
+          "name": "artist",
           "title": {
-            "en": "Name",
-            "nl": "Name"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current artist",
@@ -89,10 +89,10 @@
       "tokens": [
         {
           "type": "string",
-          "name": "name",
+          "name": "artist",
           "title": {
-            "en": "Name",
-            "nl": "Name"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current artist",
@@ -113,10 +113,10 @@
         },
         {
           "type": "string",
-          "name": "title",
+          "name": "artist",
           "title": {
-            "en": "Title",
-            "nl": "Titel"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current title",
@@ -146,10 +146,10 @@
       "tokens": [
         {
           "type": "string",
-          "name": "name",
+          "name": "artist",
           "title": {
-            "en": "Name",
-            "nl": "Name"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current artist",
@@ -203,10 +203,10 @@
       "tokens": [
         {
           "type": "string",
-          "name": "name",
+          "name": "artist",
           "title": {
-            "en": "Name",
-            "nl": "Name"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current artist",
@@ -260,10 +260,10 @@
       "tokens": [
         {
           "type": "string",
-          "name": "name",
+          "name": "artist",
           "title": {
-            "en": "Name",
-            "nl": "Name"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current artist",
@@ -317,10 +317,10 @@
       "tokens": [
         {
           "type": "string",
-          "name": "name",
+          "name": "artist",
           "title": {
-            "en": "Name",
-            "nl": "Name"
+            "en": "Artist",
+            "nl": "Artiest"
           },
           "example": {
             "en": "The current artist",

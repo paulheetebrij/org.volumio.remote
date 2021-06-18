@@ -74,8 +74,13 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
   private get playerStates(): { [device: string]: IPlayerState } {
     return this._playerStates;
   }
+
   private _playerStates: { [device: string]: IPlayerState } = {};
-  private async compareStates(device: any, newState: IPlayerState, oldState: IPlayerState): Promise<void> {
+  private async compareStates(
+    device: any,
+    newState: IPlayerState,
+    oldState: IPlayerState
+  ): Promise<void> {
     const { status, artist, title, album, volume } = newState;
     if (newState.status !== oldState.status) {
       if (newState.status === 'play') {
@@ -103,7 +108,6 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       cardTrigger.trigger(device, { artist, title, album, volume });
     }
   }
-
 }
 
 module.exports = VolumioMusicPlayerDriver;
