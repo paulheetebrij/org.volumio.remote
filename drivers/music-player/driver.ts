@@ -1,13 +1,5 @@
 import Homey from 'homey'; // eslint-disable-line
 
-interface IPlayerState {
-  status: string;
-  title: string;
-  artist: string;
-  album: string;
-  volume: number;
-}
-
 class VolumioMusicPlayerDriver extends Homey.Driver {
   /**
    * onInit is called when the driver is initialized.
@@ -18,8 +10,24 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     const cardActionPlayPlaylist = this.homey.flow.getActionCard('play-playlist');
     cardActionPlayPlaylist.registerRunListener(async (args: any) => {
       // eslint-disable-line
-      const { device, title } = args;
-      await device.playPlayList(title).catch(this.error);
+      const { device, wildcard } = args;
+      try {
+        const lists: string[] = await device.listPlayLists();
+        if (lists.length === 0) {
+          throw new Error(this.homey.__('volumioNoPlaylistsOnDevice'));
+        }
+        const selected = lists.filter((i) => i.toLowerCase().includes(wildcard.toLowerCase()));
+        if (selected.length === 0) {
+          throw new Error(this.homey.__('volumioNoPlaylistsOnDeviceMatchingWildcard'));
+        }
+        const selectedPlaylist =
+          selected.length === 1
+            ? selected[0]
+            : selected[Math.floor(Math.random() * selected.length)];
+        await device.playPlayList(selectedPlaylist);
+      } catch (err) {
+        this.error(err);
+      }
     });
   }
 
@@ -52,10 +60,6 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     const device: any = this.getDevices().find((d) => d.getData().id === deviceId);
     if (device) {
       await device.promoteState(data);
-      if (this.playerStates[deviceId]) {
-        await this.compareStates(device, data, this.playerStates[deviceId]);
-      }
-      this.playerStates[deviceId] = data;
     } else {
       this.error(`promoteState: Device ${deviceId} not found`);
     }
@@ -69,43 +73,6 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
   // Sends Volumio player zones change notification to selected device
   async promoteZones(deviceId: string, data: any): Promise<void> {
     //
-  }
-
-  private get playerStates(): { [device: string]: IPlayerState } {
-    return this._playerStates;
-  }
-
-  private _playerStates: { [device: string]: IPlayerState } = {};
-  private async compareStates(
-    device: any,
-    newState: IPlayerState,
-    oldState: IPlayerState
-  ): Promise<void> {
-    if (newState.status !== oldState.status) {
-      if (newState.status === 'play') {
-        const cardTrigger = this.homey.flow.getDeviceTriggerCard('started-playing');
-        cardTrigger.trigger(device);
-      } else {
-        const cardTrigger = this.homey.flow.getDeviceTriggerCard('stopped-playing');
-        cardTrigger.trigger(device);
-      }
-    }
-    if (newState.artist !== oldState.artist) {
-      const cardTrigger = this.homey.flow.getDeviceTriggerCard('artist-changed');
-      cardTrigger.trigger(device);
-    }
-    if (newState.title !== oldState.title) {
-      const cardTrigger = this.homey.flow.getDeviceTriggerCard('track-changed');
-      cardTrigger.trigger(device);
-    }
-    if (newState.album !== oldState.album) {
-      const cardTrigger = this.homey.flow.getDeviceTriggerCard('album-changed');
-      cardTrigger.trigger(device);
-    }
-    if (newState.volume !== oldState.volume) {
-      const cardTrigger = this.homey.flow.getDeviceTriggerCard('volume-changed');
-      cardTrigger.trigger(device);
-    }
   }
 }
 

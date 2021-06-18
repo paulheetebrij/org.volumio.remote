@@ -223,6 +223,15 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.apiCommandCall(`cmd=playplaylist&name=${title}`);
   }
 
+  async listPlayLists(): Promise<string[]> {
+    const response = await fetch(`${this.ip4Address}/api/v1/listplaylists`);
+    if (!response.ok) {
+      this.log(JSON.stringify(response));
+      throw new Error(this.homey.__('volumioPlayerError'));
+    }
+    return response.json();
+  }
+
   async promoteState(data: any): Promise<void> {
     await this.setPlayerState(data);
   }

@@ -1,5 +1,6 @@
 {
-  "pingError": "Ping geeft fout",
   "volumioPlayerError": "Volumio speler geeft fout",
-  "volumioDeviceUnavailable": "Volumio player reageert niet"
+  "volumioDeviceUnavailable": "Volumio speler reageert niet",
+  "volumioNoPlaylistsOnDevice": "Op de Volumio speler zijn geen afspeellijsten gedefinieerd",
+  "volumioNoPlaylistsOnDeviceMatchingWildcard": "Op de Volumio speler zijn geen afspeellijsten gevonden voor de zoekterm"
 }

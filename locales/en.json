@@ -1,5 +1,6 @@
 {
-  "pingError": "Ping returns error",
   "volumioPlayerError": "Volumio player returns error",
-  "volumioDeviceUnavailable": "Volumio player does not respond"
+  "volumioDeviceUnavailable": "Volumio player does not respond",
+  "volumioNoPlaylistsOnDevice": "No playlists found on device",
+  "volumioNoPlaylistsOnDeviceMatchingWildcard": "No playlists found on device for wildcard"
 }

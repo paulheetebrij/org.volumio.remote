@@ -41,92 +41,6 @@
     }
   },
   "flow": {
-    "triggers": [
-      {
-        "id": "started-playing",
-        "title": {
-          "en": "Started playing",
-          "nl": "Afspelen gestart"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=music-player"
-          }
-        ]
-      },
-      {
-        "id": "stopped-playing",
-        "title": {
-          "en": "Stopped playing",
-          "nl": "Afspelen gestopt"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=music-player"
-          }
-        ]
-      },
-      {
-        "id": "artist-changed",
-        "title": {
-          "en": "Artist changed",
-          "nl": "De artiest is gewijzigd"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=music-player"
-          }
-        ]
-      },
-      {
-        "id": "album-changed",
-        "title": {
-          "en": "Album changed",
-          "nl": "Het album is gewijzigd"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=music-player"
-          }
-        ]
-      },
-      {
-        "id": "track-changed",
-        "title": {
-          "en": "Track changed",
-          "nl": "De track is gewijzigd"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=music-player"
-          }
-        ]
-      },
-      {
-        "id": "volume-changed",
-        "title": {
-          "en": "Volume changed",
-          "nl": "Het volume is gewijzigd"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=music-player"
-          }
-        ]
-      }
-    ],
     "actions": [
       {
         "id": "play-playlist",
@@ -135,8 +49,8 @@
           "nl": "Speel afspeellijst af"
         },
         "titleFormatted": {
-          "en": "Play playlist [[title]]",
-          "nl": "Speel afspeellijst [[title]] af"
+          "en": "Play playlist [[wildcard]]",
+          "nl": "Speel afspeellijst [[wildcard]] af"
         },
         "args": [
           {
@@ -146,10 +60,10 @@
           },
           {
             "type": "text",
-            "name": "title",
+            "name": "wildcard",
             "placeholder": {
-              "en": "title",
-              "nl": "titel"
+              "en": "wildcard",
+              "nl": "zoekterm"
             }
           }
         ]
