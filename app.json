@@ -48,56 +48,6 @@
           "en": "Started playing",
           "nl": "Afspelen gestart"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current artist",
-              "nl": "De huidige artiest"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "Album",
-              "nl": "Album"
-            },
-            "example": {
-              "en": "The current album",
-              "nl": "Het huidige album"
-            }
-          },
-          {
-            "type": "string",
-            "name": "title",
-            "title": {
-              "en": "Title",
-              "nl": "Titel"
-            },
-            "example": {
-              "en": "The current title",
-              "nl": "De huidige titel"
-            }
-          },
-          {
-            "type": "number",
-            "name": "volume",
-            "title": {
-              "en": "Volume",
-              "nl": "Geluidssterkte"
-            },
-            "example": {
-              "en": "The current volume level",
-              "nl": "Het huidige geluidsniveau"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",
@@ -112,56 +62,6 @@
           "en": "Stopped playing",
           "nl": "Afspelen gestopt"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current artist",
-              "nl": "De huidige artiest"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "Album",
-              "nl": "Album"
-            },
-            "example": {
-              "en": "The current album",
-              "nl": "Het huidige album"
-            }
-          },
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current title",
-              "nl": "De huidige titel"
-            }
-          },
-          {
-            "type": "number",
-            "name": "volume",
-            "title": {
-              "en": "Volume",
-              "nl": "Geluidssterkte"
-            },
-            "example": {
-              "en": "The current volume level",
-              "nl": "Het huidige geluidsniveau"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",
@@ -176,56 +76,6 @@
           "en": "Artist changed",
           "nl": "De artiest is gewijzigd"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current artist",
-              "nl": "De huidige artiest"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "Album",
-              "nl": "Album"
-            },
-            "example": {
-              "en": "The current album",
-              "nl": "Het huidige album"
-            }
-          },
-          {
-            "type": "string",
-            "name": "title",
-            "title": {
-              "en": "Title",
-              "nl": "Titel"
-            },
-            "example": {
-              "en": "The current title",
-              "nl": "De huidige titel"
-            }
-          },
-          {
-            "type": "number",
-            "name": "volume",
-            "title": {
-              "en": "Volume",
-              "nl": "Geluidssterkte"
-            },
-            "example": {
-              "en": "The current volume level",
-              "nl": "Het huidige geluidsniveau"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",
@@ -240,56 +90,6 @@
           "en": "Album changed",
           "nl": "Het album is gewijzigd"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current artist",
-              "nl": "De huidige artiest"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "Album",
-              "nl": "Album"
-            },
-            "example": {
-              "en": "The current album",
-              "nl": "Het huidige album"
-            }
-          },
-          {
-            "type": "string",
-            "name": "title",
-            "title": {
-              "en": "Title",
-              "nl": "Titel"
-            },
-            "example": {
-              "en": "The current title",
-              "nl": "De huidige titel"
-            }
-          },
-          {
-            "type": "number",
-            "name": "volume",
-            "title": {
-              "en": "Volume",
-              "nl": "Geluidssterkte"
-            },
-            "example": {
-              "en": "The current volume level",
-              "nl": "Het huidige geluidsniveau"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",
@@ -304,56 +104,6 @@
           "en": "Track changed",
           "nl": "De track is gewijzigd"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current artist",
-              "nl": "De huidige artiest"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "Album",
-              "nl": "Album"
-            },
-            "example": {
-              "en": "The current album",
-              "nl": "Het huidige album"
-            }
-          },
-          {
-            "type": "string",
-            "name": "title",
-            "title": {
-              "en": "Title",
-              "nl": "Titel"
-            },
-            "example": {
-              "en": "The current title",
-              "nl": "De huidige titel"
-            }
-          },
-          {
-            "type": "number",
-            "name": "volume",
-            "title": {
-              "en": "Volume",
-              "nl": "Geluidssterkte"
-            },
-            "example": {
-              "en": "The current volume level",
-              "nl": "Het huidige geluidsniveau"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",
@@ -368,56 +118,6 @@
           "en": "Volume changed",
           "nl": "Het volume is gewijzigd"
         },
-        "tokens": [
-          {
-            "type": "string",
-            "name": "artist",
-            "title": {
-              "en": "Artist",
-              "nl": "Artiest"
-            },
-            "example": {
-              "en": "The current artist",
-              "nl": "De huidige artiest"
-            }
-          },
-          {
-            "type": "string",
-            "name": "album",
-            "title": {
-              "en": "Album",
-              "nl": "Album"
-            },
-            "example": {
-              "en": "The current album",
-              "nl": "Het huidige album"
-            }
-          },
-          {
-            "type": "string",
-            "name": "title",
-            "title": {
-              "en": "Title",
-              "nl": "Titel"
-            },
-            "example": {
-              "en": "The current title",
-              "nl": "De huidige titel"
-            }
-          },
-          {
-            "type": "number",
-            "name": "volume",
-            "title": {
-              "en": "Volume",
-              "nl": "Geluidssterkte"
-            },
-            "example": {
-              "en": "The current volume level",
-              "nl": "Het huidige geluidsniveau"
-            }
-          }
-        ],
         "args": [
           {
             "type": "device",

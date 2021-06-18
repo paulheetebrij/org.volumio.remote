@@ -81,31 +81,30 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     newState: IPlayerState,
     oldState: IPlayerState
   ): Promise<void> {
-    const { status, artist, title, album, volume } = newState;
     if (newState.status !== oldState.status) {
       if (newState.status === 'play') {
         const cardTrigger = this.homey.flow.getDeviceTriggerCard('started-playing');
-        cardTrigger.trigger(device, { artist, title, album, volume });
+        cardTrigger.trigger(device);
       } else {
         const cardTrigger = this.homey.flow.getDeviceTriggerCard('stopped-playing');
-        cardTrigger.trigger(device, { artist, title, album, volume });
+        cardTrigger.trigger(device);
       }
     }
     if (newState.artist !== oldState.artist) {
       const cardTrigger = this.homey.flow.getDeviceTriggerCard('artist-changed');
-      cardTrigger.trigger(device, { artist, title, album, volume });
+      cardTrigger.trigger(device);
     }
     if (newState.title !== oldState.title) {
       const cardTrigger = this.homey.flow.getDeviceTriggerCard('track-changed');
-      cardTrigger.trigger(device, { artist, title, album, volume });
+      cardTrigger.trigger(device);
     }
     if (newState.album !== oldState.album) {
       const cardTrigger = this.homey.flow.getDeviceTriggerCard('album-changed');
-      cardTrigger.trigger(device, { artist, title, album, volume });
+      cardTrigger.trigger(device);
     }
     if (newState.volume !== oldState.volume) {
       const cardTrigger = this.homey.flow.getDeviceTriggerCard('volume-changed');
-      cardTrigger.trigger(device, { artist, title, album, volume });
+      cardTrigger.trigger(device);
     }
   }
 }
