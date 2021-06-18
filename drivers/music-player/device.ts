@@ -277,36 +277,66 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   private _fullImageUrl: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private async subscribeStatus(): Promise<void> {
-    const { id } = this.getData();
-    const homeyAddress = await this.homey.cloud.getLocalAddress();
-    const homeyUrl = homeyAddress.split(':');
-    const query = `?url=http://${homeyUrl[0]}/api/app/com.volumio.remote/${id}${homeyUrl.length === 2 ? ':' + homeyUrl[1] : ''}`;
-    this.log(`subscribe status ${query}`);
-    // const response = await fetch(`${this.ip}/api/v1/pushNotificationUrls${query}`,
-    //   {
-    //     method: 'POST',
-    //     body: JSON.stringify({ url: `http://${homeyUrl[0]}/api/app/com.volumio.remote/${id}${homeyUrl.length === 2 ? ':' + homeyUrl[1] : ''}` })
-    //   });
-    // if (!response.ok) {
-    //   this.log(JSON.stringify(response));
-    //   throw new Error(this.homey.__('volumioPlayerError'));
-    // }
+    this.log(`subscribe status ${this.getName()}`);
+    const url = await this.getNotificationUrl();
+    const getResponse = await fetch(`${this.ip}/api/v1/pushNotificationUrls`);
+    if (!getResponse.ok) {
+      this.log(JSON.stringify(getResponse));
+      throw new Error(this.homey.__('volumioPlayerError'));
+    }
+    const notificationUrls = await getResponse.json();
+
+    if (!notificationUrls.includes(url)) {
+      const body = `url=${url}`;
+      const postResponse = await fetch(`${this.ip}/api/v1/pushNotificationUrls`, {
+        method: 'POST',
+        body,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      if (!postResponse.ok) {
+        this.log(JSON.stringify(postResponse));
+        throw new Error(this.homey.__('volumioPlayerError'));
+      }
+      const answer = await postResponse.json();
+      this.log(`Volumio: ${JSON.stringify(answer)}`);
+    }
   }
 
   private async unSubscribeStatus(): Promise<void> {
-    this.log(`subscribe status ${this.getName()}`);
+    this.log(`unsubscribe status ${this.getName()}`);
+    const notificationUrl = await this.getNotificationUrl();
+    const response = await fetch(`${this.ip}/api/v1/pushNotificationUrls?url=${notificationUrl}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      this.log(JSON.stringify(response));
+      throw new Error(this.homey.__('volumioPlayerError'));
+    }
+  }
+
+  private async getNotificationUrl(): Promise<string> {
     const { id } = this.getData();
     const homeyAddress = await this.homey.cloud.getLocalAddress();
     const homeyUrl = homeyAddress.split(':');
-    const query = `?url=http://${homeyUrl[0]}/api/app/com.volumio.remote/${id}${homeyUrl.length === 2 ? ':' + homeyUrl[1] : ''}`;
-    // const response = await fetch(`${this.ip}/api/v1/pushNotificationUrls${query}`,
-    //   {
-    //     method: 'DELETE',
-    //   });
-    // if (!response.ok) {
-    //   this.log(JSON.stringify(response));
-    //   throw new Error(this.homey.__('volumioPlayerError'));
-    // }
+    let homeyUrlProtocol = 'http';
+    let homeyUrlIp4: string;
+    let homeyUrlPort = '80';
+    switch (true) {
+      case homeyUrl[0] === 'http':
+      case homeyUrl[0] === 'https':
+        homeyUrlProtocol = homeyUrl[0];
+        homeyUrlIp4 = homeyUrl[1];
+        homeyUrlPort = homeyUrl.length === 3 ? homeyUrl[2] : '80';
+        break;
+      default:
+        homeyUrlIp4 = homeyUrl[0];
+        homeyUrlPort = homeyUrl.length === 2 ? homeyUrl[1] : '80';
+    }
+    return `${homeyUrlProtocol}://${homeyUrlIp4}/api/app/com.volumio.remote/${id}${
+      homeyUrlPort !== '80' ? `:${homeyUrlPort}` : ''
+    }`;
   }
 
   private _poller: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -333,7 +363,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
 
   /* eslint-disable no-empty-pattern */
-  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
+  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
     this.log('Volumio music player settings where changed');
   }
 
@@ -344,7 +374,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
   async onRenamed(name: string) {
     // eslint-disable-line @typescript-eslint/no-unused-vars
-    this.log(`Volumio music player was renamed: ${name}`);
+    this.log(`Volumio music player was renamed: ${name} `);
   }
 
   /**
