@@ -1,36 +1,32 @@
+import { stat } from 'fs';
 import Homey from 'homey'; // eslint-disable-line
 import fetch from 'node-fetch'; // eslint-disable-line
-
-//item: "state",
-// data:
-// {
-
-interface IPushNotificationStateData {
-  status: string;
-  position: number;
-  title: string;
-  artist: string;
-  album: string;
-  albumart: string;
-  uri: string;
-  trackType: string;
-  seek: number;
-  duration: number;
-  samplerate: string;
-  bitdepth: string;
-  channels: number;
-  random: boolean;
-  repeat: boolean;
-  repeatSingle: boolean;
-  consume: boolean;
-  volume: number;
-  disableVolumeControl: boolean;
-  mute: boolean;
-  stream: string;
-  updatedb: boolean;
-  volatile: boolean;
-  service: string;
-}
+// interface IPushNotificationStateData {
+//   status: string;
+//   position: number;
+//   title: string;
+//   artist: string;
+//   album: string;
+//   albumart: string;
+//   uri: string;
+//   trackType: string;
+//   seek: number;
+//   duration: number;
+//   samplerate: string;
+//   bitdepth: string;
+//   channels: number;
+//   random: boolean;
+//   repeat: boolean;
+//   repeatSingle: boolean;
+//   consume: boolean;
+//   volume: number;
+//   disableVolumeControl: boolean;
+//   mute: boolean;
+//   stream: string;
+//   updatedb: boolean;
+//   volatile: boolean;
+//   service: string;
+// }
 
 interface IPlayerState {
   status: string;
@@ -64,28 +60,19 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     this.log('Class:', this.getClass());
 
     try {
-      await this.pinger();
+      await this.subscribeStatus();
     } catch (err) {
       this.error(JSON.stringify(err));
       this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
     }
-    await this.subscribeStatus();
 
     await this.getPlayerState().then(
       () => this.setAvailable(),
       (err) => {
         this.error(JSON.stringify(err));
         this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
-      });
-    //         this.poller(() =>
-    //   this.getPlayerState().then(
-    //     () => this.setAvailable(),
-    //     (err) => {
-    //       this.error(JSON.stringify(err));
-    //       this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
-    //     }
-    //   )
-    // );
+      }
+    );
 
     this.registerCapabilityListener('speaker_prev', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -153,14 +140,6 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     return `http://${this.getStoreValue('address')}`;
   }
 
-  async pinger(): Promise<void> {
-    const response = await fetch(`${this.ip4Address}/api/v1/ping`);
-    if (!response.ok) {
-      this.log(JSON.stringify(response));
-      throw new Error(this.homey.__('pingError'));
-    }
-  }
-
   async getPlayerState(): Promise<void> {
     const response = await fetch(`${this.ip4Address}/api/v1/getState`);
     if (!response.ok) {
@@ -221,12 +200,6 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.apiCommandCall(`cmd=repeat&value=${value}`);
   }
 
-  // ** Seek ** seek N(N is the time in seconds that the playback will keep)
-  // ** Random ** setRandom({ "value": true | false })
-  // ** repeat ** setRepeat({ "value": true | false })
-
-  // search {value:'query'}
-
   async setVolume(value: number): Promise<void> {
     await this.apiCommandCall(`cmd=volume&volume=${value}`);
   }
@@ -247,7 +220,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.apiCommandCall('cmd=volume&volume=unmute');
   }
 
-  async playList(title: string): Promise<void> {
+  async playPlayList(title: string): Promise<void> {
     await this.apiCommandCall(`cmd=playplaylist&name=${title}`);
   }
 
@@ -256,6 +229,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   }
 
   private async setPlayerState(state: IPlayerState): Promise<void> {
+    await this.setCapabilityValue('speaker_playing', state.status === 'play').catch(this.error);
     await this.setCapabilityValue('speaker_artist', state.artist).catch(this.error);
     await this.setCapabilityValue('speaker_album', state.album).catch(this.error);
     await this.setCapabilityValue('speaker_track', state.title).catch(this.error);
@@ -264,39 +238,33 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.setCapabilityValue('volume_set', state.volume / 100).catch(this.error);
     await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
     await this.setAlbumArtwork(state.albumart);
-
     // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ?
     // "track" : state.repeat ? "playlist" : "none").catch (this.error);
   }
 
   private async setAlbumArtwork(imageUrl?: string): Promise<void> {
-    // const loadImage = async (image: any, url: string) => { // eslint-disable-line
-    //   await image.setStream(async (stream: any) => { // eslint-disable-line
-    //     const response = await fetch(url);
-    //     if (!response.ok) {
-    //       this.log(JSON.stringify(response));
-    //       throw new Error(this.homey.__('volumioPlayerError'));
-    //     }
-    //     return response.body.pipe(stream);
-    //   });
-    // };
-    // try {
-    //   const fullImageUrl = `${this.ip}${!imageUrl ||
-    // imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
-    //   const image = await this.getImage();
-    //   if (this.fullImageUrl !== fullImageUrl) {
-    //     await loadImage(image, fullImageUrl);
-    //     await image.update();
-    //     await this.setAlbumArtImage(image);
-    //     this.fullImageUrl = fullImageUrl;
-    //   } else {
-    //     await loadImage(image, fullImageUrl);
-    //     await image.update();
-    //     await this.setAlbumArtImage(image);
-    //   }
-    // } catch (err) {
-    //   this.error(JSON.stringify(err));
-    // }
+    const loadImage = (image: any, url: string) => {
+      // eslint-disable-line
+      image.setStream(async (stream: any) => {
+        // eslint-disable-line
+        const response = await fetch(url);
+        if (!response.ok) {
+          this.log(JSON.stringify(response));
+          throw new Error(this.homey.__('volumioPlayerError'));
+        }
+        return response.body.pipe(stream);
+      });
+    };
+    try {
+      const fullImageUrl = `${this.ip4Address}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
+        }`;
+      const image = await this.getImage();
+      loadImage(image, fullImageUrl);
+      await image.update();
+      await this.setAlbumArtImage(image);
+    } catch (err) {
+      this.error(JSON.stringify(err));
+    }
   }
 
   private async getImage(): Promise<Homey.Image> {
@@ -305,17 +273,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     }
     return this._image;
   }
-
-  private set fullImageUrl(value: string) {
-    this._fullImageUrl = value;
-  }
-
-  private get fullImageUrl(): string {
-    return this._fullImageUrl;
-  }
-
   private _image: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  private _fullImageUrl: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private async subscribeStatus(): Promise<void> {
     this.log(`subscribe status ${this.getName()}`);
@@ -340,8 +298,6 @@ class VolumioMusicPlayerDevice extends Homey.Device {
         this.log(JSON.stringify(postResponse));
         throw new Error(this.homey.__('volumioPlayerError'));
       }
-      const answer = await postResponse.json();
-      this.log(`Volumio: ${JSON.stringify(answer)}`);
     }
   }
 
@@ -360,40 +316,27 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     }
   }
 
+  // Get Url for notification REST call
   private async getNotificationUrl(): Promise<string> {
     const { id } = this.getData();
     const homeyAddress = await this.homey.cloud.getLocalAddress();
     const homeyUrl = homeyAddress.split(':');
     let homeyUrlProtocol = 'http';
     let homeyUrlIp4: string;
-    let homeyUrlPort = '80';
+    let homeyUrlPort: string;
     switch (true) {
       case homeyUrl[0] === 'http':
       case homeyUrl[0] === 'https':
         homeyUrlProtocol = homeyUrl[0];
         homeyUrlIp4 = homeyUrl[1];
-        homeyUrlPort = homeyUrl.length === 3 ? homeyUrl[2] : '80';
+        homeyUrlPort = homeyUrl.length === 3 && homeyUrl[2] !== '80' ? `:${homeyUrl[2]}` : '';
         break;
       default:
-        homeyUrlIp4 = homeyUrl[0];
-        homeyUrlPort = homeyUrl.length === 2 ? homeyUrl[1] : '80';
+        homeyUrlIp4 = `//${homeyUrl[0]}`;
+        homeyUrlPort = homeyUrl.length === 2 && homeyUrl[1] !== '80' ? `:${homeyUrl[1]}` : '';
+        break;
     }
-    return `${homeyUrlProtocol}://${homeyUrlIp4}/api/app/org.volumio.remote/${id}${homeyUrlPort !== '80' ? `:${homeyUrlPort}` : ''
-      }`;
-  }
-
-  private _poller: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
-    if (!this._poller) {
-      this._poller === setInterval(pollingFunction, 2000); // eslint-disable-line
-    }
-    return this._poller as NodeJS.Timeout;
-  }
-
-  private clearPoller(): void {
-    if (this._poller) {
-      clearInterval(this._poller);
-    }
+    return `${homeyUrlProtocol}:${homeyUrlIp4}/api/app/org.volumio.remote/${id}${homeyUrlPort}`;
   }
 
   /**
@@ -425,10 +368,9 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
   async onDeleted() {
     this.log('Volumio music player has been deleted');
+    await this.unSubscribeStatus();
     const image = await this.getImage();
     await image.unregister();
-    await this.unSubscribeStatus();
-    // this.clearPoller();
   }
 }
 

@@ -21,5 +21,349 @@
         }
       ]
     }
+  ],
+  "triggers": [
+    {
+      "id": "started-playing",
+      "title": {
+        "en": "Started playing",
+        "nl": "Afspelen gestart"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "name",
+          "title": {
+            "en": "Name",
+            "nl": "Name"
+          },
+          "example": {
+            "en": "The current artist",
+            "nl": "De huidige artiest"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "Album",
+            "nl": "Album"
+          },
+          "example": {
+            "en": "The current album",
+            "nl": "Het huidige album"
+          }
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "title": {
+            "en": "Title",
+            "nl": "Titel"
+          },
+          "example": {
+            "en": "The current title",
+            "nl": "De huidige titel"
+          }
+        },
+        {
+          "type": "number",
+          "name": "volume",
+          "title": {
+            "en": "Volume",
+            "nl": "Geluidssterkte"
+          },
+          "example": {
+            "en": "The current volume level",
+            "nl": "Het huidige geluidsniveau"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stopped-playing",
+      "title": {
+        "en": "Stopped playing",
+        "nl": "Afspelen gestopt"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "name",
+          "title": {
+            "en": "Name",
+            "nl": "Name"
+          },
+          "example": {
+            "en": "The current artist",
+            "nl": "De huidige artiest"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "Album",
+            "nl": "Album"
+          },
+          "example": {
+            "en": "The current album",
+            "nl": "Het huidige album"
+          }
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "title": {
+            "en": "Title",
+            "nl": "Titel"
+          },
+          "example": {
+            "en": "The current title",
+            "nl": "De huidige titel"
+          }
+        },
+        {
+          "type": "number",
+          "name": "volume",
+          "title": {
+            "en": "Volume",
+            "nl": "Geluidssterkte"
+          },
+          "example": {
+            "en": "The current volume level",
+            "nl": "Het huidige geluidsniveau"
+          }
+        }
+      ]
+    },
+    {
+      "id": "artist-changed",
+      "title": {
+        "en": "Artist changed",
+        "nl": "De artiest is gewijzigd"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "name",
+          "title": {
+            "en": "Name",
+            "nl": "Name"
+          },
+          "example": {
+            "en": "The current artist",
+            "nl": "De huidige artiest"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "Album",
+            "nl": "Album"
+          },
+          "example": {
+            "en": "The current album",
+            "nl": "Het huidige album"
+          }
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "title": {
+            "en": "Title",
+            "nl": "Titel"
+          },
+          "example": {
+            "en": "The current title",
+            "nl": "De huidige titel"
+          }
+        },
+        {
+          "type": "number",
+          "name": "volume",
+          "title": {
+            "en": "Volume",
+            "nl": "Geluidssterkte"
+          },
+          "example": {
+            "en": "The current volume level",
+            "nl": "Het huidige geluidsniveau"
+          }
+        }
+      ]
+    },
+    {
+      "id": "album-changed",
+      "title": {
+        "en": "Album changed",
+        "nl": "Het album is gewijzigd"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "name",
+          "title": {
+            "en": "Name",
+            "nl": "Name"
+          },
+          "example": {
+            "en": "The current artist",
+            "nl": "De huidige artiest"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "Album",
+            "nl": "Album"
+          },
+          "example": {
+            "en": "The current album",
+            "nl": "Het huidige album"
+          }
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "title": {
+            "en": "Title",
+            "nl": "Titel"
+          },
+          "example": {
+            "en": "The current title",
+            "nl": "De huidige titel"
+          }
+        },
+        {
+          "type": "number",
+          "name": "volume",
+          "title": {
+            "en": "Volume",
+            "nl": "Geluidssterkte"
+          },
+          "example": {
+            "en": "The current volume level",
+            "nl": "Het huidige geluidsniveau"
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-changed",
+      "title": {
+        "en": "Track changed",
+        "nl": "De track is gewijzigd"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "name",
+          "title": {
+            "en": "Name",
+            "nl": "Name"
+          },
+          "example": {
+            "en": "The current artist",
+            "nl": "De huidige artiest"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "Album",
+            "nl": "Album"
+          },
+          "example": {
+            "en": "The current album",
+            "nl": "Het huidige album"
+          }
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "title": {
+            "en": "Title",
+            "nl": "Titel"
+          },
+          "example": {
+            "en": "The current title",
+            "nl": "De huidige titel"
+          }
+        },
+        {
+          "type": "number",
+          "name": "volume",
+          "title": {
+            "en": "Volume",
+            "nl": "Geluidssterkte"
+          },
+          "example": {
+            "en": "The current volume level",
+            "nl": "Het huidige geluidsniveau"
+          }
+        }
+      ]
+    },
+    {
+      "id": "volume-changed",
+      "title": {
+        "en": "Volume changed",
+        "nl": "Het volume is gewijzigd"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "name",
+          "title": {
+            "en": "Name",
+            "nl": "Name"
+          },
+          "example": {
+            "en": "The current artist",
+            "nl": "De huidige artiest"
+          }
+        },
+        {
+          "type": "string",
+          "name": "album",
+          "title": {
+            "en": "Album",
+            "nl": "Album"
+          },
+          "example": {
+            "en": "The current album",
+            "nl": "Het huidige album"
+          }
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "title": {
+            "en": "Title",
+            "nl": "Titel"
+          },
+          "example": {
+            "en": "The current title",
+            "nl": "De huidige titel"
+          }
+        },
+        {
+          "type": "number",
+          "name": "volume",
+          "title": {
+            "en": "Volume",
+            "nl": "Geluidssterkte"
+          },
+          "example": {
+            "en": "The current volume level",
+            "nl": "Het huidige geluidsniveau"
+          }
+        }
+      ]
+    }
   ]
 }

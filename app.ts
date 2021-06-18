@@ -9,25 +9,29 @@ class VolumioApp extends Homey.App {
    */
   async onInit(): Promise<void> {
     this.log('Volumio app has been initialized');
-
-    // const cardConditionDeviceIsPlaying = this.homey.flow.getConditionCard("device-is-playing");
-    // cardConditionDeviceIsPlaying.registerRunListener(async () => {
-    //   // true or false
-    // });
-
-    // const cardActionPlay = this.homey.flow.getActionCard("play");
-    // cardActionPlay.registerRunListener(async (args: any) => {
-
-    // });
   }
 
+  // Sends Volumio change notification to Volumio driver
   async volumiostatus(deviceId: string, body: any): Promise<void> {
-    this.log(`${deviceId}, ${JSON.stringify(body)}`);
-    const { item, data } = body;
-    if (item === "state") {
-      const driver: any = this.homey.drivers.getDriver("music-player");
-      await driver.promoteState(deviceId, data);
-      // verstuur state data naar deviceId
+    const driver: any = this.homey.drivers.getDriver('music-player');
+    if (driver) {
+      const { item, data } = body;
+      switch (item) {
+        case 'state':
+          await driver.promoteState(deviceId, data);
+          break;
+        case 'queue':
+          await driver.promoteQueue(deviceId, data);
+          break;
+        case 'zones':
+          await driver.promoteZones(deviceId, data);
+          break;
+        default:
+          this.error(`volumiostatus: unknown item ${item}`);
+          break;
+      }
+    } else {
+      this.error('volumiostatus: Driver not found');
     }
   }
 }
