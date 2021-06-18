@@ -31,5 +31,11 @@
       }
     }
   },
-  "source": "https://github.com/paulheetebrij/org.volumio.remote"
+  "source": "https://github.com/paulheetebrij/org.volumio.remote",
+  "api": {
+    "volumiostatus": {
+      "method": "POST",
+      "path": "/"
+    }
+  }
 }

@@ -23,13 +23,13 @@ interface IPlayerState {
   service: string,
 }
 
-class MyDevice extends Homey.Device {
+class VolumioAudioPlayerDevice extends Homey.Device {
 
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('Device init');
+    this.log('Volumio audio player device init');
     this.log('Name:', this.getName());
     this.log('Class:', this.getClass());
 
@@ -100,11 +100,11 @@ class MyDevice extends Homey.Device {
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('MyDevice has been added');
+    this.log('Volumio audio player has been added');
   }
 
   private get ip(): string {
-    return this.getStoreValue('address');
+    return `http://${this.getStoreValue('address')}`;
   }
 
   async pinger(): Promise<void> {
@@ -220,32 +220,32 @@ class MyDevice extends Homey.Device {
   }
 
   private async setAlbumArtwork(imageUrl?: string): Promise<void> {
-    const loadImage = async (image: any, url: string) => { // eslint-disable-line
-      await image.setStream(async (stream: any) => { // eslint-disable-line
-        const response = await fetch(url);
-        if (!response.ok) {
-          this.log(JSON.stringify(response));
-          throw new Error(this.homey.__('volumioPlayerError'));
-        }
-        return response.body.pipe(stream);
-      });
-    };
-    try {
-      const fullImageUrl = `${this.ip}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
-      const image = await this.getImage();
-      if (this.fullImageUrl !== fullImageUrl) {
-        await loadImage(image, fullImageUrl);
-        await image.update();
-        await this.setAlbumArtImage(image);
-        this.fullImageUrl = fullImageUrl;
-      } else {
-        await loadImage(image, fullImageUrl);
-        await image.update();
-        // await this.setAlbumArtImage(image);
-      }
-    } catch (err) {
-      this.error(JSON.stringify(err));
-    }
+    // const loadImage = async (image: any, url: string) => { // eslint-disable-line
+    //   await image.setStream(async (stream: any) => { // eslint-disable-line
+    //     const response = await fetch(url);
+    //     if (!response.ok) {
+    //       this.log(JSON.stringify(response));
+    //       throw new Error(this.homey.__('volumioPlayerError'));
+    //     }
+    //     return response.body.pipe(stream);
+    //   });
+    // };
+    // try {
+    //   const fullImageUrl = `${this.ip}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl}`;
+    //   const image = await this.getImage();
+    //   if (this.fullImageUrl !== fullImageUrl) {
+    //     await loadImage(image, fullImageUrl);
+    //     await image.update();
+    //     await this.setAlbumArtImage(image);
+    //     this.fullImageUrl = fullImageUrl;
+    //   } else {
+    //     await loadImage(image, fullImageUrl);
+    //     await image.update();
+    //     await this.setAlbumArtImage(image);
+    //   }
+    // } catch (err) {
+    //   this.error(JSON.stringify(err));
+    // }
   }
 
   private async getImage(): Promise<Homey.Image> {
@@ -289,7 +289,7 @@ class MyDevice extends Homey.Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> { // eslint-disable-line
-    this.log('MyDevice settings where changed');
+    this.log('Volumio audio player settings where changed');
   }
 
   /**
@@ -298,14 +298,14 @@ class MyDevice extends Homey.Device {
    * @param {string} name The new name
    */
   async onRenamed(name: string) { // eslint-disable-line @typescript-eslint/no-unused-vars
-    this.log('MyDevice was renamed');
+    this.log('Volumio audio player was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
-    this.log('MyDevice has been deleted');
+    this.log('Volumio audio player has been deleted');
     const image = await this.getImage();
     await image.unregister();
     this.clearPoller();
@@ -313,4 +313,4 @@ class MyDevice extends Homey.Device {
 
 }
 
-module.exports = MyDevice;
+module.exports = VolumioAudioPlayerDevice;

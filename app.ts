@@ -3,13 +3,13 @@ import Homey from 'homey'; // eslint-disable-line
 
 sourceMapSupport.install();
 
-class MyApp extends Homey.App {
+class VolumioApp extends Homey.App {
 
   /**
    * onInit is called when the app is initialized.
    */
   async onInit(): Promise<void> {
-    this.log('MyApp has been initialized');
+    this.log('Volumio app has been initialized');
 
     // const cardConditionDeviceIsPlaying = this.homey.flow.getConditionCard("device-is-playing");
     // cardConditionDeviceIsPlaying.registerRunListener(async () => {
@@ -21,7 +21,6 @@ class MyApp extends Homey.App {
 
     // });
   }
-
 }
 
-module.exports = MyApp;
+module.exports = VolumioApp;

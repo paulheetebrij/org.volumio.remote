@@ -33,6 +33,12 @@
     }
   },
   "source": "https://github.com/paulheetebrij/org.volumio.remote",
+  "api": {
+    "volumiostatus": {
+      "method": "POST",
+      "path": "/"
+    }
+  },
   "flow": {
     "actions": [
       {
@@ -116,7 +122,8 @@
       "mdns-sd": {
         "protocol": "tcp",
         "name": "Volumio"
-      }
+      },
+      "id": "{{name}}"
     }
   }
 }
