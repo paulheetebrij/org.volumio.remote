@@ -36,7 +36,8 @@
   "api": {
     "volumiostatus": {
       "method": "POST",
-      "path": "/"
+      "path": "/:id",
+      "public": true
     }
   },
   "flow": {

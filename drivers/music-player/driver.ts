@@ -44,6 +44,15 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     });
     return devices;
   }
+
+  async promoteState(deviceId: string, data: any): Promise<void> {
+    const device: any = this.getDevices().find(d => d.getData().id === deviceId);
+    if (device) {
+      await device.promoteState(data);
+    } else {
+      this.log(`Device ${deviceId} not found`);
+    }
+  }
 }
 
 module.exports = VolumioMusicPlayerDriver;

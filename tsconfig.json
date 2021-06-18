@@ -2,6 +2,17 @@
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
     "outDir": "build/",
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "allowJs": true
+  },
+  "files": [
+    "api.js"
+  ],
+  "include": [
+    "**/*.ts", "api.js",
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }

@@ -1,6 +1,37 @@
 import Homey from 'homey'; // eslint-disable-line
 import fetch from 'node-fetch'; // eslint-disable-line
 
+//item: "state",
+// data:
+// {
+
+interface IPushNotificationStateData {
+  status: string;
+  position: number;
+  title: string;
+  artist: string;
+  album: string;
+  albumart: string;
+  uri: string;
+  trackType: string;
+  seek: number;
+  duration: number;
+  samplerate: string;
+  bitdepth: string;
+  channels: number;
+  random: boolean;
+  repeat: boolean;
+  repeatSingle: boolean;
+  consume: boolean;
+  volume: number;
+  disableVolumeControl: boolean;
+  mute: boolean;
+  stream: string;
+  updatedb: boolean;
+  volatile: boolean;
+  service: string;
+}
+
 interface IPlayerState {
   status: string;
   position: number;
@@ -40,15 +71,21 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     }
     await this.subscribeStatus();
 
-    this.poller(() =>
-      this.getPlayerState().then(
-        () => this.setAvailable(),
-        (err) => {
-          this.error(JSON.stringify(err));
-          this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
-        }
-      )
-    );
+    await this.getPlayerState().then(
+      () => this.setAvailable(),
+      (err) => {
+        this.error(JSON.stringify(err));
+        this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
+      });
+    //         this.poller(() =>
+    //   this.getPlayerState().then(
+    //     () => this.setAvailable(),
+    //     (err) => {
+    //       this.error(JSON.stringify(err));
+    //       this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
+    //     }
+    //   )
+    // );
 
     this.registerCapabilityListener('speaker_prev', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -112,12 +149,12 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.subscribeStatus();
   }
 
-  private get ip(): string {
+  private get ip4Address(): string {
     return `http://${this.getStoreValue('address')}`;
   }
 
   async pinger(): Promise<void> {
-    const response = await fetch(`${this.ip}/api/v1/ping`);
+    const response = await fetch(`${this.ip4Address}/api/v1/ping`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('pingError'));
@@ -125,7 +162,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   }
 
   async getPlayerState(): Promise<void> {
-    const response = await fetch(`${this.ip}/api/v1/getState`);
+    const response = await fetch(`${this.ip4Address}/api/v1/getState`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
@@ -135,7 +172,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   }
 
   async isPlaying(): Promise<boolean> {
-    const response = await fetch(`${this.ip}/api/v1/getState`);
+    const response = await fetch(`${this.ip4Address}/api/v1/getState`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
@@ -145,7 +182,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   }
 
   private async apiCommandCall(routeArguments: string): Promise<void> {
-    const response = await fetch(`${this.ip}/api/v1/commands/?${routeArguments}`);
+    const response = await fetch(`${this.ip4Address}/api/v1/commands/?${routeArguments}`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
@@ -214,6 +251,10 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.apiCommandCall(`cmd=playplaylist&name=${title}`);
   }
 
+  async promoteState(data: any): Promise<void> {
+    await this.setPlayerState(data);
+  }
+
   private async setPlayerState(state: IPlayerState): Promise<void> {
     await this.setCapabilityValue('speaker_artist', state.artist).catch(this.error);
     await this.setCapabilityValue('speaker_album', state.album).catch(this.error);
@@ -279,7 +320,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   private async subscribeStatus(): Promise<void> {
     this.log(`subscribe status ${this.getName()}`);
     const url = await this.getNotificationUrl();
-    const getResponse = await fetch(`${this.ip}/api/v1/pushNotificationUrls`);
+    const getResponse = await fetch(`${this.ip4Address}/api/v1/pushNotificationUrls`);
     if (!getResponse.ok) {
       this.log(JSON.stringify(getResponse));
       throw new Error(this.homey.__('volumioPlayerError'));
@@ -288,7 +329,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
 
     if (!notificationUrls.includes(url)) {
       const body = `url=${url}`;
-      const postResponse = await fetch(`${this.ip}/api/v1/pushNotificationUrls`, {
+      const postResponse = await fetch(`${this.ip4Address}/api/v1/pushNotificationUrls`, {
         method: 'POST',
         body,
         headers: {
@@ -307,9 +348,12 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   private async unSubscribeStatus(): Promise<void> {
     this.log(`unsubscribe status ${this.getName()}`);
     const notificationUrl = await this.getNotificationUrl();
-    const response = await fetch(`${this.ip}/api/v1/pushNotificationUrls?url=${notificationUrl}`, {
-      method: 'DELETE'
-    });
+    const response = await fetch(
+      `${this.ip4Address}/api/v1/pushNotificationUrls?url=${notificationUrl}`,
+      {
+        method: 'DELETE'
+      }
+    );
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
@@ -334,9 +378,8 @@ class VolumioMusicPlayerDevice extends Homey.Device {
         homeyUrlIp4 = homeyUrl[0];
         homeyUrlPort = homeyUrl.length === 2 ? homeyUrl[1] : '80';
     }
-    return `${homeyUrlProtocol}://${homeyUrlIp4}/api/app/com.volumio.remote/${id}${
-      homeyUrlPort !== '80' ? `:${homeyUrlPort}` : ''
-    }`;
+    return `${homeyUrlProtocol}://${homeyUrlIp4}/api/app/org.volumio.remote/${id}${homeyUrlPort !== '80' ? `:${homeyUrlPort}` : ''
+      }`;
   }
 
   private _poller: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -363,7 +406,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
 
   /* eslint-disable no-empty-pattern */
-  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
+  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
     this.log('Volumio music player settings where changed');
   }
 
@@ -385,7 +428,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     const image = await this.getImage();
     await image.unregister();
     await this.unSubscribeStatus();
-    this.clearPoller();
+    // this.clearPoller();
   }
 }
 

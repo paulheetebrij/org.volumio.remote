@@ -23,6 +23,12 @@ class VolumioApp extends Homey.App {
 
   async volumiostatus(deviceId: string, body: any): Promise<void> {
     this.log(`${deviceId}, ${JSON.stringify(body)}`);
+    const { item, data } = body;
+    if (item === "state") {
+      const driver: any = this.homey.drivers.getDriver("music-player");
+      await driver.promoteState(deviceId, data);
+      // verstuur state data naar deviceId
+    }
   }
 }
 
