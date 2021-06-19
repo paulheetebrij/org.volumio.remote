@@ -58,73 +58,70 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     this.log('Name:', this.getName());
     this.log('Class:', this.getClass());
 
-    try {
-      await this.subscribeStatus();
-    } catch (err) {
-      this.error(JSON.stringify(err));
-      this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
-    }
-
-    await this.getPlayerState().then(
-      () => this.setAvailable(),
-      (err) => {
-        this.error(JSON.stringify(err));
-        this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
-      }
+    await this.tryConnect({ firstTime: true });
+    this.poller(() =>
+      this.tryConnect({}).catch(this.error)
     );
 
     this.registerCapabilityListener('speaker_prev', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('speaker_prev', value);
       await this.previous();
     });
 
     this.registerCapabilityListener('speaker_next', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('speaker_next', value);
       await this.next();
     });
 
     this.registerCapabilityListener('speaker_playing', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('speaker_playing', value);
       await (value ? this.play() : this.pause()).catch(this.error);
     });
 
     this.registerCapabilityListener('volume_set', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('volume_set', value);
       await this.setVolume(value * 100).catch(this.error);
     });
 
     this.registerCapabilityListener('volume_down', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('volume_down', value);
       await this.decreaseVolume().catch(this.error);
     });
 
     this.registerCapabilityListener('volume_mute', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('volume_mute', value);
       await (value ? this.mute() : this.unmute()).catch(this.error);
     });
 
     this.registerCapabilityListener('volume_up', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('volume_up', value);
       await this.increaseVolume().catch(this.error);
     });
 
     this.registerCapabilityListener('speaker_shuffle', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
-      this.log('speaker_shuffle', value);
       await this.shuffle(value);
     });
 
-    // this.registerCapabilityListener("speaker_repeat", async (value: any) => {
-    //   this.log("speaker_repeat", value);// track playlist none
-    //   await this.repeat(value !== "none");
-    // });
+    // Volumio REST API does not support repeat commands like: track playlist none
+    // For that reason I have not implemented speaker_repeat capability
+  }
+
+  async tryConnect(parameters: { firstTime?: boolean }): Promise<void> {
+    try {
+      const playerState = await this.getPlayerState();
+      if (parameters.firstTime === true) {
+        await this.setPlayerState(playerState);
+        await this.subscribeStatus();
+      } else if (!this.getAvailable()) {
+        await this.setPlayerState(playerState);
+        await this.subscribeStatus();
+        await this.setAvailable();
+      }
+    } catch (err) {
+      this.error(err);
+      this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
+    }
   }
 
   /**
@@ -139,24 +136,13 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     return `http://${this.getStoreValue('address')}`;
   }
 
-  async getPlayerState(): Promise<void> {
+  async getPlayerState(): Promise<IPlayerState> {
     const response = await fetch(`${this.ip4Address}/api/v1/getState`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
     }
-    const state = await response.json();
-    await this.setPlayerState(state as IPlayerState);
-  }
-
-  async isPlaying(): Promise<boolean> {
-    const response = await fetch(`${this.ip4Address}/api/v1/getState`);
-    if (!response.ok) {
-      this.log(JSON.stringify(response));
-      throw new Error(this.homey.__('volumioPlayerError'));
-    }
-    const { status } = await response.json();
-    return status === 'playing';
+    return response.json();
   }
 
   private async apiCommandCall(routeArguments: string): Promise<void> {
@@ -184,11 +170,11 @@ class VolumioMusicPlayerDevice extends Homey.Device {
   }
 
   async next(): Promise<void> {
-    await this.apiCommandCall('cmd=next').then(() => this.getPlayerState());
+    await this.apiCommandCall('cmd=next');
   }
 
   async previous(): Promise<void> {
-    await this.apiCommandCall('cmd=prev').then(() => this.getPlayerState());
+    await this.apiCommandCall('cmd=prev');
   }
 
   async shuffle(value: boolean): Promise<void> {
@@ -246,8 +232,8 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.setCapabilityValue('volume_set', state.volume / 100).catch(this.error);
     await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
     await this.setAlbumArtwork(state.albumart);
-    // await this.setCapabilityValue("speaker_repeat", state.repeatSingle ?
-    // "track" : state.repeat ? "playlist" : "none").catch (this.error);
+    // Volumio REST API does not support repeat commands like: track playlist none
+    // For that reason I have not implemented speaker_repeat capability
   }
 
   private async setAlbumArtwork(imageUrl?: string): Promise<void> {
@@ -264,9 +250,8 @@ class VolumioMusicPlayerDevice extends Homey.Device {
       });
     };
     try {
-      const fullImageUrl = `${this.ip4Address}${
-        !imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
-      }`;
+      const fullImageUrl = `${this.ip4Address}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
+        }`;
       const image = await this.getImage();
       loadImage(image, fullImageUrl);
       await image.update();
@@ -349,6 +334,19 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     return `${homeyUrlProtocol}:${homeyUrlIp4}/api/app/org.volumio.remote/${id}${homeyUrlPort}`;
   }
 
+  private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
+    if (!this._poller) {
+      this._poller === setInterval(pollingFunction, 15000); // eslint-disable-line
+    }
+    return this._poller as NodeJS.Timeout;
+  }
+  private clearPoller(): void {
+    if (this._poller) {
+      clearInterval(this._poller);
+    }
+  }
+  private _poller: any;
+
   /**
    * onSettings is called when the user updates the device's settings.
    * @param {object} event the onSettings event data
@@ -359,7 +357,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
 
   /* eslint-disable no-empty-pattern */
-  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
+  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
     this.log('Volumio music player settings where changed');
   }
 
@@ -381,6 +379,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     await this.unSubscribeStatus();
     const image = await this.getImage();
     await image.unregister();
+    await this.clearPoller();
   }
 }
 

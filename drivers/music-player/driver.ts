@@ -20,10 +20,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         if (selected.length === 0) {
           throw new Error(this.homey.__('volumioNoPlaylistsOnDeviceMatchingWildcard'));
         }
-        const selectedPlaylist =
-          selected.length === 1
-            ? selected[0]
-            : selected[Math.floor(Math.random() * selected.length)];
+        const selectedPlaylist = selected.slice(Math.floor(Math.random() * selected.length) - 1)[0];
         await device.playPlayList(selectedPlaylist);
       } catch (err) {
         this.error(err);
