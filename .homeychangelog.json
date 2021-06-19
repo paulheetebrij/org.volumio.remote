@@ -1,5 +1,8 @@
 {
   "1.1.0": {
     "en": "Play random playlist by search wildcard"
+  },
+  "1.1.1": {
+    "en": "Fixed potential error in random select playlist. Poller for availability check."
   }
 }
