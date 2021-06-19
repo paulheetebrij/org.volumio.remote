@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "prettier-format": "prettier --config .prettierrc '**/*.ts'",
-    "prettier-format-write": "prettier --config .prettierrc '**/*.ts' --write",
+    "prebuild:prettier-format": "prettier --config .prettierrc '**/*.ts' --write",
     "prebuild:lint": "eslint . --ext .ts --fix",
-    "prebuild": "npm run -s prebuild:lint",
+    "prebuild": "npm run -s prebuild:prettier-format && npm run -s prebuild:lint",
     "build": "tsc",
     "test:mocha": "mocha --exit -r ts-node/register",
     "test": "npm run -s test:mocha **/*.spec.ts",
