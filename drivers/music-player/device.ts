@@ -59,9 +59,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     this.log('Class:', this.getClass());
 
     await this.tryConnect({ firstTime: true });
-    this.poller(() =>
-      this.tryConnect({}).catch(this.error)
-    );
+    this.poller(() => this.tryConnect({}).catch(this.error));
 
     this.registerCapabilityListener('speaker_prev', async (value: any) => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -250,8 +248,9 @@ class VolumioMusicPlayerDevice extends Homey.Device {
       });
     };
     try {
-      const fullImageUrl = `${this.ip4Address}${!imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
-        }`;
+      const fullImageUrl = `${this.ip4Address}${
+        !imageUrl || imageUrl.includes('undefined') ? 'albumart' : imageUrl
+      }`;
       const image = await this.getImage();
       loadImage(image, fullImageUrl);
       await image.update();
@@ -340,11 +339,13 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     }
     return this._poller as NodeJS.Timeout;
   }
+
   private clearPoller(): void {
     if (this._poller) {
       clearInterval(this._poller);
     }
   }
+
   private _poller: any;
 
   /**
@@ -357,7 +358,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
    */
 
   /* eslint-disable no-empty-pattern */
-  async onSettings({ oldSettings: { }, newSettings: { }, changedKeys: { } }): Promise<string | void> {
+  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string | void> {
     this.log('Volumio music player settings where changed');
   }
 
