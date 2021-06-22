@@ -11,17 +11,53 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     cardActionPlayPlaylist.registerRunListener(async (args: any) => {
       // eslint-disable-line
       const { device, wildcard } = args;
+      const tokens = { wildcard };
       try {
         const lists: string[] = await device.listPlayLists();
-        if (lists.length === 0) {
-          throw new Error(this.homey.__('volumioNoPlaylistsOnDevice'));
+        if (lists.length !== 0) {
+          const selected = lists.filter((i) => i.toLowerCase().includes(wildcard.toLowerCase()));
+          if (selected.length !== 0) {
+            const selectedPlaylist = selected.slice(
+              Math.floor(Math.random() * selected.length) - 1
+            )[0];
+            await device.playPlayList(selectedPlaylist);
+          } else {
+            const cardTriggerNoPlaylistsFound =
+              this.homey.flow.getDeviceTriggerCard('no-playlists-found');
+            await cardTriggerNoPlaylistsFound.trigger(device, tokens);
+          }
+        } else {
+          const cardTriggerNoPlaylistsFound =
+            this.homey.flow.getDeviceTriggerCard('no-playlists-found');
+          await cardTriggerNoPlaylistsFound.trigger(device, tokens);
         }
-        const selected = lists.filter((i) => i.toLowerCase().includes(wildcard.toLowerCase()));
-        if (selected.length === 0) {
-          throw new Error(this.homey.__('volumioNoPlaylistsOnDeviceMatchingWildcard'));
+      } catch (err) {
+        this.error(err);
+      }
+    });
+
+    const cardActionPlayTracksByTitle = this.homey.flow.getActionCard('play-tracks-by-title');
+    cardActionPlayTracksByTitle.registerRunListener(async (args: any) => {
+      // eslint-disable-line
+      const { device, wildcard } = args;
+      try {
+        const result: any = await device.searchFor(wildcard);
+        const tracks = result.navigation.lists
+          .map((l: any) => l.items)
+          .reduce((a: any, c: any) => a.items.concat(c.items))
+          .filter(
+            (i: any) => i.type === 'song' && i.title.toLowerCase().includes(wildcard.toLowerCase())
+          );
+        if (tracks.length !== 0) {
+          const item = tracks[0];
+          const list = tracks;
+          const index = 0;
+          await device.replaceAndPlay({ item, list, index });
+        } else {
+          const tokens = { wildcard };
+          const cardTriggerNoTracksFound = this.homey.flow.getDeviceTriggerCard('no-tracks-found');
+          await cardTriggerNoTracksFound.trigger(device, tokens);
         }
-        const selectedPlaylist = selected.slice(Math.floor(Math.random() * selected.length) - 1)[0];
-        await device.playPlayList(selectedPlaylist);
       } catch (err) {
         this.error(err);
       }

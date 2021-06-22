@@ -20,6 +20,63 @@
           }
         }
       ]
+    },
+    {
+      "id": "play-tracks-by-title",
+      "title": {
+        "en": "Play tracks by title",
+        "nl": "Speel tracks met titel"
+      },
+      "titleFormatted": {
+        "en": "Play tracks by title [[wildcard]]",
+        "nl": "Speel tracks met titel [[wildcard]]"
+      },
+      "args": [
+        {
+          "type": "text",
+          "name": "wildcard",
+          "placeholder": {
+            "en": "wildcard",
+            "nl": "zoekterm"
+          }
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "id": "no-playlists-found",
+      "title": {
+        "en": "No playlists found",
+        "nl": "Geen afspeellijsten gevonden"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "wildcard",
+          "title": {
+            "en": "wildcard supplied",
+            "nl": "gebruikte zoekterm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "no-tracks-found",
+      "title": {
+        "en": "No tracks found",
+        "nl": "Geen tracks gevonden"
+      },
+      "tokens": [
+        {
+          "type": "string",
+          "name": "wildcard",
+          "title": {
+            "en": "wildcard supplied",
+            "nl": "gebruikte zoekterm"
+          }
+        }
+      ]
     }
   ]
 }
