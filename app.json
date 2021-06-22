@@ -28,7 +28,7 @@
   "contributing": {
     "donate": {
       "paypal": {
-        "username": "http://paypal.me/paulheetebrij"
+        "username": "paulheetebrij"
       }
     }
   },
@@ -41,6 +41,56 @@
     }
   },
   "flow": {
+    "triggers": [
+      {
+        "id": "no-playlists-found",
+        "title": {
+          "en": "No playlists found",
+          "nl": "Geen afspeellijsten gevonden"
+        },
+        "tokens": [
+          {
+            "type": "string",
+            "name": "wildcard",
+            "title": {
+              "en": "wildcard supplied",
+              "nl": "gebruikte zoekterm"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "no-tracks-found",
+        "title": {
+          "en": "No tracks found",
+          "nl": "Geen tracks gevonden"
+        },
+        "tokens": [
+          {
+            "type": "string",
+            "name": "wildcard",
+            "title": {
+              "en": "wildcard supplied",
+              "nl": "gebruikte zoekterm"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      }
+    ],
     "actions": [
       {
         "id": "play-playlist",
@@ -51,6 +101,32 @@
         "titleFormatted": {
           "en": "Play playlist [[wildcard]]",
           "nl": "Speel afspeellijst [[wildcard]] af"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "text",
+            "name": "wildcard",
+            "placeholder": {
+              "en": "wildcard",
+              "nl": "zoekterm"
+            }
+          }
+        ]
+      },
+      {
+        "id": "play-tracks-by-title",
+        "title": {
+          "en": "Play tracks by title",
+          "nl": "Speel tracks met titel"
+        },
+        "titleFormatted": {
+          "en": "Play tracks by title [[wildcard]]",
+          "nl": "Speel tracks met titel [[wildcard]]"
         },
         "args": [
           {
