@@ -9,8 +9,8 @@
     "nl": "Volumio"
   },
   "description": {
-    "en": "Control your Volumio player with Homey",
-    "nl": "Bestuur je Volumio speler met Homey"
+    "en": "All your music in one place",
+    "nl": "Al je muziek op een plaats"
   },
   "category": [
     "music"
@@ -27,7 +27,7 @@
   "contributing": {
     "donate": {
       "paypal": {
-        "username": "http://paypal.me/paulheetebrij"
+        "username": "paulheetebrij"
       }
     }
   },

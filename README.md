@@ -1,3 +1,2 @@
 # Volumio
-
-Bestuur je Volumio speler met Homey
+All your music in one place

@@ -372,7 +372,7 @@ class VolumioMusicPlayerDevice extends Homey.Device {
     this.log(`Volumio music player was renamed: ${name} `);
   }
 
-  /**
+  /*
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
