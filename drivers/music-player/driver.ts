@@ -6,12 +6,21 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
    */
   async onInit() {
     this.log('Driver Volumio music player has been initialized');
+    const cardActionClearQueue = this.homey.flow.getActionCard('clear-queue');
+    cardActionClearQueue.registerRunListener(async (args: any) => {
+      const { device } = args;
+      try {
+        await device.clearQueue();
+      } catch (err) {
+        this.error(err);
+      }
+    });
 
     const cardActionPlayPlaylist = this.homey.flow.getActionCard('play-playlist');
     cardActionPlayPlaylist.registerRunListener(async (args: any) => {
       // eslint-disable-line
       const { device, wildcard } = args;
-      const tokens = { wildcard };
+      const tokens = { wildcard, class: this.homey.__('playlists') };
       try {
         const lists: string[] = await device.listPlayLists();
         if (lists.length !== 0) {
@@ -22,13 +31,11 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
             )[0];
             await device.playPlayList(selectedPlaylist);
           } else {
-            const cardTriggerNoPlaylistsFound =
-              this.homey.flow.getDeviceTriggerCard('no-playlists-found');
+            const cardTriggerNoPlaylistsFound = this.homey.flow.getDeviceTriggerCard('no-results');
             await cardTriggerNoPlaylistsFound.trigger(device, tokens);
           }
         } else {
-          const cardTriggerNoPlaylistsFound =
-            this.homey.flow.getDeviceTriggerCard('no-playlists-found');
+          const cardTriggerNoPlaylistsFound = this.homey.flow.getDeviceTriggerCard('no-results');
           await cardTriggerNoPlaylistsFound.trigger(device, tokens);
         }
       } catch (err) {
@@ -49,13 +56,10 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
             (i: any) => i.type === 'song' && i.title.toLowerCase().includes(wildcard.toLowerCase())
           );
         if (tracks.length !== 0) {
-          const item = tracks[0];
-          const list = tracks;
-          const index = 0;
-          await device.replaceAndPlay({ item, list, index });
+          await device.replaceAndPlay({ items: tracks });
         } else {
-          const tokens = { wildcard };
-          const cardTriggerNoTracksFound = this.homey.flow.getDeviceTriggerCard('no-tracks-found');
+          const tokens = { wildcard, class: this.homey.__('tracks') };
+          const cardTriggerNoTracksFound = this.homey.flow.getDeviceTriggerCard('no-results');
           await cardTriggerNoTracksFound.trigger(device, tokens);
         }
       } catch (err) {
@@ -94,7 +98,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     if (device) {
       await device.promoteState(data);
     } else {
-      this.error(`promoteState: Device ${deviceId} not found`);
+      this.error(`${this.homey.__('volumioAudioPlayerNotFound')}: ${deviceId}`);
     }
   }
 

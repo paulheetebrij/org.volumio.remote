@@ -2,5 +2,8 @@
   "volumioPlayerError": "Volumio speler geeft fout",
   "volumioDeviceUnavailable": "Volumio speler reageert niet",
   "volumioNoPlaylistsOnDevice": "Op de Volumio speler zijn geen afspeellijsten gedefinieerd",
-  "volumioNoPlaylistsOnDeviceMatchingWildcard": "Op de Volumio speler zijn geen afspeellijsten gevonden voor de zoekterm"
+  "volumioAudioPlayerNotFound": "Volumio speler niet gevonden",
+  "volumioNoPlaylistsOnDeviceMatchingWildcard": "Op de Volumio speler zijn geen afspeellijsten gevonden voor de zoekterm",
+  "playlists": "afspeellijsten",
+  "tracks": "tracks"
 }
