@@ -1,6 +1,13 @@
 {
   "actions": [
     {
+      "id": "clear-queue",
+      "title": {
+        "en": "Clear queue",
+        "nl": "Maak wachtrij leeg"
+      }
+    },
+    {
       "id": "play-playlist",
       "title": {
         "en": "Play playlist",
@@ -15,8 +22,8 @@
           "type": "text",
           "name": "wildcard",
           "placeholder": {
-            "en": "wildcard",
-            "nl": "zoekterm"
+            "en": "Piano",
+            "nl": "Piano"
           }
         }
       ]
@@ -36,8 +43,29 @@
           "type": "text",
           "name": "wildcard",
           "placeholder": {
-            "en": "wildcard",
-            "nl": "zoekterm"
+            "en": "Round Midnight",
+            "nl": "Liefde"
+          }
+        }
+      ]
+    },
+    {
+      "id": "play-all-from-artist",
+      "title": {
+        "en": "Play every track from artist",
+        "nl": "Speel alles af van artiest"
+      },
+      "titleFormatted": {
+        "en": "Play every track from [[artist]]",
+        "nl": "Speel alles van [[artist]]"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "artist",
+          "placeholder": {
+            "en": "Frank Zappa",
+            "nl": "Jantje Koopmans"
           }
         }
       ]
@@ -45,29 +73,20 @@
   ],
   "triggers": [
     {
-      "id": "no-playlists-found",
+      "id": "no-results",
       "title": {
-        "en": "No playlists found",
-        "nl": "Geen afspeellijsten gevonden"
+        "en": "The query led to no results",
+        "nl": "Geen resultaten gevonden voor de gebruikte zoekterm"
       },
       "tokens": [
         {
           "type": "string",
-          "name": "wildcard",
+          "name": "class",
           "title": {
-            "en": "wildcard supplied",
-            "nl": "gebruikte zoekterm"
+            "en": "subject",
+            "nl": "soort"
           }
-        }
-      ]
-    },
-    {
-      "id": "no-tracks-found",
-      "title": {
-        "en": "No tracks found",
-        "nl": "Geen tracks gevonden"
-      },
-      "tokens": [
+        },
         {
           "type": "string",
           "name": "wildcard",

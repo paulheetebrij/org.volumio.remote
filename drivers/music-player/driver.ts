@@ -66,6 +66,42 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+
+    const cardActionPlayAllFromArtist = this.homey.flow.getActionCard('play-all-from-artist');
+    cardActionPlayAllFromArtist.registerArgumentAutocompleteListener(
+      'artist',
+      async (query, args) => {
+        const { device } = args;
+        if (query.length === 0) {
+          return [];
+        }
+        try {
+          const result = await device.browse('artists://');
+          const results = result.navigation.lists[0].items.map((i: any) => {
+            return { name: i.title, image: device.tinyarturi(i.title), uri: i.uri };
+          });
+          const shortlist = results.filter(
+            (r: any) => r.name.toLowerCase().slice(0, query.length) === query.toLowerCase()
+          );
+          return shortlist.length !== 0
+            ? shortlist
+            : results.filter((r: any) => r.name.toLowerCase().includes(query.toLowerCase()));
+        } catch (err) {
+          this.error(err);
+          return [];
+        }
+      }
+    );
+    cardActionPlayAllFromArtist.registerRunListener(async (args: any) => {
+      const { device, artist } = args;
+      try {
+        const result = await device.browse(artist.uri);
+        const { items } = result.navigation.lists[0];
+        await device.replaceAndPlay({ items });
+      } catch (err) {
+        this.error(err);
+      }
+    });
   }
 
   /**

@@ -118,6 +118,7 @@ export interface ISystemInfo {
 }
 
 interface IVolumioMusicPlayerDevice {
+  tinyarturi(artist: string): string;
   play(): Promise<void>;
   toggle(): Promise<void>;
   pause(): Promise<void>;
@@ -136,6 +137,7 @@ interface IVolumioMusicPlayerDevice {
   replaceAndPlay(parameters: { items: IQueueItem[]; startAt?: number }): Promise<void>;
   addToQueue(item: IQueueItem | IQueueItem[]): Promise<void>;
   listPlayLists(): Promise<string[]>;
+  browse(uri: string): Promise<ISearchResult>;
   searchFor(wildcard: string): Promise<ISearchResult>;
   promoteState(data: IPlayerState): Promise<void>;
   getCollectionStats(): Promise<ICollectionStats>;
@@ -360,6 +362,20 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
 
   async listPlayLists(): Promise<string[]> {
     const response = await fetch(`${this.ip4Address}/api/v1/listplaylists`);
+    if (!response.ok) {
+      this.log(JSON.stringify(response));
+      throw new Error(this.homey.__('volumioPlayerError'));
+    }
+    return response.json();
+  }
+
+  tinyarturi(artist: string): string {
+    const artistCode = artist.toLowerCase().replace(/\//g, ' ').replace(' ', '_');
+    return `${this.ip4Address}/tinyart/${artistCode}/large`;
+  }
+
+  async browse(uri: string): Promise<ISearchResult> {
+    const response = await fetch(`${this.ip4Address}/api/v1/browse?uri=${uri}`);
     if (!response.ok) {
       this.log(JSON.stringify(response));
       throw new Error(this.homey.__('volumioPlayerError'));
