@@ -183,6 +183,32 @@
         ]
       },
       {
+        "id": "play-album",
+        "title": {
+          "en": "Play album",
+          "nl": "Speel album"
+        },
+        "titleFormatted": {
+          "en": "Play album [[album]]",
+          "nl": "Speel album [[album]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "autocomplete",
+            "name": "album",
+            "placeholder": {
+              "en": "Ogdens' Nut Gone Flake",
+              "nl": "Zijn Grootste Successen (tot nu toe)"
+            }
+          }
+        ]
+      },
+      {
         "id": "queue-all-artists-from-genre",
         "title": {
           "en": "Queue all artists from genre",
@@ -230,6 +256,35 @@
             "placeholder": {
               "en": "Bluegrass",
               "nl": "Nederpop"
+            }
+          }
+        ]
+      },
+      {
+        "id": "queue-all-albums-from-year",
+        "title": {
+          "en": "Queue all albums from year",
+          "nl": "Plaats alle albums van jaar in wachtrij"
+        },
+        "titleFormatted": {
+          "en": "Queue every album from year [[year]]",
+          "nl": "Plaats alle albums van jaar [[year]] in wachtrij"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "number",
+            "name": "year",
+            "placeholder": {
+              "en": "2006",
+              "nl": "1970",
+              "min": "1900",
+              "max": "2100",
+              "step": "1"
             }
           }
         ]

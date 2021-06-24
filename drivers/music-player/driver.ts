@@ -1,6 +1,7 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 import Homey from 'homey'; // eslint-disable-line
 import {
+  ALBUMS_URL,
   ARTISTS_URL,
   FAVOURITES_URL,
   GENRES_URL,
@@ -107,6 +108,47 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       }
     });
 
+    const cardActionPlayAlbum = this.homey.flow.getActionCard('play-album');
+    cardActionPlayAlbum.registerArgumentAutocompleteListener('album', async (query, args) =>
+      this.getAlbumByQuery(args.device, query)
+    );
+    cardActionPlayAlbum.registerRunListener(async (args: any) => {
+      const { device, album } = args;
+      try {
+        const d = device as IVolumioMusicPlayerDevice;
+        const result = await d.browse(album.uri);
+        const { items } = withResult(result);
+        const tokens = { wildcard: album.name, class: this.homey.__('tracks') };
+        if (items.length !== 0) {
+          await d.replaceAndPlay({ items });
+        } else {
+          await this.notifyNoResults(device, tokens);
+        }
+      } catch (err) {
+        this.error(err);
+      }
+    });
+
+    const cardActionqueueAlbumsFromYear = this.homey.flow.getActionCard(
+      'queue-all-albums-from-year'
+    );
+    cardActionqueueAlbumsFromYear.registerRunListener(async (args: any) => {
+      const { device, year } = args;
+      try {
+        const d = device as IVolumioMusicPlayerDevice;
+        const result = await d.browse(ALBUMS_URL);
+        const { items } = withResult(result).filter.byYear(year);
+        const tokens = { wildcard: `year: ${year}`, class: this.homey.__('albums') };
+        if (items.length !== 0) {
+          await d.addToQueue(items);
+        } else {
+          await this.notifyNoResults(device, tokens);
+        }
+      } catch (err) {
+        this.error(err);
+      }
+    });
+
     const cardActionQueueAllArtistsFromGenre = this.homey.flow.getActionCard(
       'queue-all-artists-from-genre'
     );
@@ -173,6 +215,28 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       .items.map((i: ISearchResultItem) => {
         return { name: i.title, uri: i.uri };
       });
+  }
+
+  private albumResultToAutocomplete(
+    result: ISearchResult,
+    query: string
+  ): { name: string; uri: string }[] {
+    return withResult(result)
+      .filter.titleStartsWithOrContains(query)
+      .items.map((i: ISearchResultItem) => {
+        return { name: `${i.title} - ${i.artist}`, uri: i.uri };
+      });
+  }
+
+  private async getAlbumByQuery(device: IVolumioMusicPlayerDevice, query: string): Promise<any> {
+    if (query.length !== 0) {
+      try {
+        return this.albumResultToAutocomplete(await device.browse(ALBUMS_URL), query);
+      } catch (err) {
+        this.error(err);
+      }
+    }
+    return [];
   }
 
   private async getArtistByQuery(device: IVolumioMusicPlayerDevice, query: string): Promise<any> {

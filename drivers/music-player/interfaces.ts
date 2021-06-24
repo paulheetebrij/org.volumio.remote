@@ -1,5 +1,6 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 export const ARTISTS_URL = 'artists://';
+export const ALBUMS_URL = 'albums://';
 export const GENRES_URL = 'genres://';
 export const FAVOURITES_URL = 'favourites';
 
@@ -72,6 +73,7 @@ export interface ISearchResultItem {
   title: string;
   artist?: string;
   album?: string;
+  year?: string; // Bij albums. Bevat soms jaar, soms complete datum incl. tijdstip...
   uri: string; // artists://... => artiest = ..., albums..., genres...
   icon?: string;
   albumart: string;
