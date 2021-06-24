@@ -4,5 +4,8 @@
   "volumioAudioPlayerNotFound": "Volumio audio player not found",
   "volumioNoPlaylistsOnDevice": "No playlists found on device",
   "playlists": "playlists",
-  "tracks": "tracks"
+  "tracks": "tracks",
+  "artists": "artists",
+  "albums": "albums",
+  "favourites":"favourites"
 }

@@ -38,22 +38,6 @@ export function withResultItems(resultItems: ISearchResultItem[]) {
 
 export function withResult(result: ISearchResult) {
   return {
-    // // ArgumentAutocompleteResults verwacht enkel object. Output mag meerdere objecten bevatten
-    // titleStartsWithOrContains(query: string): any { // eslint-ignore-line
-    //   if (query.length !== 0) {
-    //     const { titleStartsWith, titleContains } = withResultItems(
-    //       result.navigation.lists[0].items
-    //     );
-    //     return (
-    //       titleStartsWith(query).items.length !== 0
-    //         ? titleStartsWith(query).items
-    //         : titleContains(query).items
-    //     ).map((i: ISearchResultItem) => {
-    //       return { name: i.title, uri: i.uri };
-    //     });
-    //   }
-    //   return [];
-    // },
     get items(): ISearchResultItem[] {
       return result.navigation.lists[0].items;
     },

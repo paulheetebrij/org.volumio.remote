@@ -50,6 +50,13 @@
       ]
     },
     {
+      "id": "play-favourites",
+      "title": {
+        "en": "Play track from favourites",
+        "nl": "Speel alle favorieten"
+      }
+    },
+    {
       "id": "play-all-from-artist",
       "title": {
         "en": "Play every track from artist",

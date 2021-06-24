@@ -1,6 +1,7 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 export const ARTISTS_URL = 'artists://';
 export const GENRES_URL = 'genres://';
+export const FAVOURITES_URL = 'favourites';
 
 export interface IQueueItem {
   uri: string;
