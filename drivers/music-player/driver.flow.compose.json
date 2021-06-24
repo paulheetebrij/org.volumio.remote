@@ -1,13 +1,6 @@
 {
   "actions": [
     {
-      "id": "clear-queue",
-      "title": {
-        "en": "Clear queue",
-        "nl": "Maak wachtrij leeg"
-      }
-    },
-    {
       "id": "play-playlist",
       "title": {
         "en": "Play playlist",
@@ -99,6 +92,13 @@
       ]
     },
     {
+      "id": "clear-queue",
+      "title": {
+        "en": "Clear queue",
+        "nl": "Maak wachtrij leeg"
+      }
+    },
+    {
       "id": "queue-all-artists-from-genre",
       "title": {
         "en": "Queue all artists from genre",
@@ -169,8 +169,8 @@
     {
       "id": "no-results",
       "title": {
-        "en": "The query led to no results",
-        "nl": "Geen resultaten gevonden voor de gebruikte zoekterm"
+        "en": "No result",
+        "nl": "Geen resultaat"
       },
       "tokens": [
         {
@@ -185,8 +185,8 @@
           "type": "string",
           "name": "wildcard",
           "title": {
-            "en": "wildcard supplied",
-            "nl": "gebruikte zoekterm"
+            "en": "wildcard",
+            "nl": "zoekterm"
           }
         }
       ]
@@ -194,15 +194,15 @@
     {
       "id": "device-offline",
       "title": {
-        "en": "Volumio audio player unreachable",
-        "nl": "Volumio speler niet bereikbaar"
+        "en": "Device unreachable",
+        "nl": "Apparaat niet bereikbaar"
       }
     },
     {
       "id": "device-online",
       "title": {
-        "en": "Volumio audio player online again",
-        "nl": "Volumio speler weer bereikbaar"
+        "en": "Device online",
+        "nl": "Apparaat online"
       }
     }
   ]

@@ -45,8 +45,8 @@
       {
         "id": "no-results",
         "title": {
-          "en": "The query led to no results",
-          "nl": "Geen resultaten gevonden voor de gebruikte zoekterm"
+          "en": "No results",
+          "nl": "Geen resultaat"
         },
         "tokens": [
           {
