@@ -190,6 +190,20 @@
           }
         }
       ]
+    },
+    {
+      "id": "device-offline",
+      "title": {
+        "en": "Volumio audio player unreachable",
+        "nl": "Volumio speler niet bereikbaar"
+      }
+    },
+    {
+      "id": "device-online",
+      "title": {
+        "en": "Volumio audio player online again",
+        "nl": "Volumio speler weer bereikbaar"
+      }
     }
   ]
 }

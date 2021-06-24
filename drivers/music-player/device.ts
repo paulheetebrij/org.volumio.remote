@@ -7,7 +7,8 @@ import {
   IQueueItem,
   ISearchResult,
   ISystemInfo,
-  IVolumioMusicPlayerDevice
+  IVolumioMusicPlayerDevice,
+  POLLING_INTERVAL
 } from './interfaces'; // eslint-disable-line
 
 class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlayerDevice {
@@ -19,8 +20,7 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
     this.log('Name:', this.getName());
     this.log('Class:', this.getClass());
 
-    await this.tryConnect({ firstTime: true });
-    this.poller(() => this.tryConnect({}).catch(this.error));
+    await this.refreshPlayerState({ firstTime: true });
 
     this.registerCapabilityListener('speaker_prev', async () => {
       // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -66,21 +66,29 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
     // For that reason I have not implemented speaker_repeat capability
   }
 
-  async tryConnect(parameters: { firstTime?: boolean }): Promise<void> {
-    try {
-      const playerState = await this.getPlayerState();
-      if (parameters.firstTime === true) {
-        await this.setPlayerState(playerState);
-        await this.subscribeStatus();
-      } else if (!this.getAvailable()) {
-        await this.setPlayerState(playerState);
-        await this.subscribeStatus();
-        await this.setAvailable();
+  async refreshPlayerState(parameters: { firstTime?: boolean }): Promise<void> {
+    if (this.notificationReceived) {
+      this.notificationReceived = false;
+    } else {
+      try {
+        const playerState = await this.getPlayerState();
+        await this.setPlayerState(playerState).catch(this.error);
+        if (parameters.firstTime === true) {
+          await this.subscribeStatus();
+        } else if (!this.getAvailable()) {
+          await this.subscribeStatus();
+          this.driver.emit('deviceOnline', { device: this });
+          await this.setAvailable();
+        }
+      } catch (err) {
+        this.error(err);
+        if (this.getAvailable()) {
+          this.driver.emit('deviceOffline', { device: this });
+          this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
+        }
       }
-    } catch (err) {
-      this.error(err);
-      this.setUnavailable(this.homey.__('volumioDeviceUnavailable'));
     }
+    setTimeout(() => this.refreshPlayerState({}).catch(this.error), POLLING_INTERVAL);
   }
 
   /**
@@ -259,8 +267,19 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
   }
 
   async promoteState(data: IPlayerState): Promise<void> {
+    this.notificationReceived = true;
     await this.setPlayerState(data);
   }
+
+  private set notificationReceived(value: boolean) {
+    this._notificationReceived = value;
+  }
+
+  private get notificationReceived(): boolean {
+    return this._notificationReceived;
+  }
+
+  private _notificationReceived = false;
 
   private async setPlayerState(state: IPlayerState): Promise<void> {
     await this.setCapabilityValue('speaker_playing', state.status === 'play').catch(this.error);
@@ -311,7 +330,6 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
   private _image: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private async subscribeStatus(): Promise<void> {
-    this.log(`subscribe status ${this.getName()}`);
     const url = await this.getNotificationUrl();
     const getResponse = await fetch(`${this.ip4Address}/api/v1/pushNotificationUrls`);
     if (!getResponse.ok) {
@@ -321,6 +339,7 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
     const notificationUrls = await getResponse.json();
 
     if (!notificationUrls.includes(url)) {
+      this.log(`subscribe status ${this.getName()}`);
       const body = `url=${url}`;
       const postResponse = await fetch(`${this.ip4Address}/api/v1/pushNotificationUrls`, {
         method: 'POST',
@@ -374,21 +393,6 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
     return `${homeyUrlProtocol}:${homeyUrlIp4}/api/app/org.volumio.remote/${id}${homeyUrlPort}`;
   }
 
-  private poller(pollingFunction: () => Promise<void>): NodeJS.Timeout {
-    if (!this._poller) {
-      this._poller === setInterval(pollingFunction, 15000); // eslint-disable-line
-    }
-    return this._poller as NodeJS.Timeout;
-  }
-
-  private clearPoller(): void {
-    if (this._poller) {
-      clearInterval(this._poller);
-    }
-  }
-
-  private _poller: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-
   /**
    * onSettings is called when the user updates the device's settings.
    * @param {object} event the onSettings event data
@@ -421,7 +425,6 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
     await this.unSubscribeStatus();
     const image = await this.getImage();
     await image.unregister();
-    await this.clearPoller();
   }
 }
 

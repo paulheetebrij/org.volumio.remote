@@ -73,6 +73,34 @@
             "filter": "driver_id=music-player"
           }
         ]
+      },
+      {
+        "id": "device-offline",
+        "title": {
+          "en": "Volumio audio player unreachable",
+          "nl": "Volumio speler niet bereikbaar"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
+      },
+      {
+        "id": "device-online",
+        "title": {
+          "en": "Volumio audio player online again",
+          "nl": "Volumio speler weer bereikbaar"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          }
+        ]
       }
     ],
     "actions": [

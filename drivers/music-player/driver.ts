@@ -17,6 +17,16 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
    */
   async onInit() {
     this.log('Driver Volumio music player has been initialized');
+    this.addListener('deviceOffline', async (args) => {
+      const { device } = args;
+      return this.homey.flow.getDeviceTriggerCard('device-offline').trigger(device);
+    });
+
+    this.addListener('deviceOnline', async (args) => {
+      const { device } = args;
+      return this.homey.flow.getDeviceTriggerCard('device-online').trigger(device);
+    });
+
     const cardActionClearQueue = this.homey.flow.getActionCard('clear-queue');
     cardActionClearQueue.registerRunListener(async (args: any) => {
       const { device } = args;

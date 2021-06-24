@@ -1,4 +1,5 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
+export const POLLING_INTERVAL = 15000;
 export const ARTISTS_URL = 'artists://';
 export const ALBUMS_URL = 'albums://';
 export const GENRES_URL = 'genres://';
