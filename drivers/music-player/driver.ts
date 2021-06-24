@@ -7,7 +7,8 @@ import {
   GENRES_URL,
   ISearchResult,
   ISearchResultItem,
-  IVolumioMusicPlayerDevice
+  IVolumioMusicPlayerDevice,
+  WEBRADIOSTATION_FAVOURITES
 } from './interfaces'; // eslint-disable-line
 import { withResult } from './withResult'; // eslint-disable-line
 
@@ -96,7 +97,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       }
     });
 
-    const cardActionPlayAllFromArtist = this.homey.flow.getActionCard('play-all-from-artist');
+    const cardActionPlayAllFromArtist = this.homey.flow.getActionCard('play-all-artist');
     cardActionPlayAllFromArtist.registerArgumentAutocompleteListener(
       'artist',
       async (query, args) => this.getArtistByQuery(args.device, query)
@@ -113,6 +114,25 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         } else {
           await this.notifyNoResults(device, tokens);
         }
+      } catch (err) {
+        this.error(err);
+      }
+    });
+
+    const cardActionListenFavouriteWebradiostation = this.homey.flow.getActionCard(
+      'listen-favourite-webradiostation'
+    );
+    cardActionListenFavouriteWebradiostation.registerArgumentAutocompleteListener(
+      'webradiostation',
+      async (query, args) => this.getFavouriteWebradiostationByQuery(args.device, query)
+    );
+    cardActionListenFavouriteWebradiostation.registerRunListener(async (args: any) => {
+      const { device, webradiostation } = args;
+      try {
+        const { name: title, uri, service, type, icon } = webradiostation;
+        const items = [{ title, uri, service, type, icon }];
+        const d = device as IVolumioMusicPlayerDevice;
+        await d.replaceAndPlay({ items });
       } catch (err) {
         this.error(err);
       }
@@ -139,9 +159,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       }
     });
 
-    const cardActionqueueAlbumsFromYear = this.homey.flow.getActionCard(
-      'queue-all-albums-from-year'
-    );
+    const cardActionqueueAlbumsFromYear = this.homey.flow.getActionCard('queue-all-albums-year');
     cardActionqueueAlbumsFromYear.registerRunListener(async (args: any) => {
       const { device, year } = args;
       try {
@@ -159,9 +177,8 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       }
     });
 
-    const cardActionQueueAllArtistsFromGenre = this.homey.flow.getActionCard(
-      'queue-all-artists-from-genre'
-    );
+    const cardActionQueueAllArtistsFromGenre =
+      this.homey.flow.getActionCard('queue-all-artists-genre');
     cardActionQueueAllArtistsFromGenre.registerArgumentAutocompleteListener(
       'genre',
       async (query, args) => this.getGenreByQuery(args.device, query)
@@ -185,9 +202,8 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       }
     });
 
-    const cardActionQueueAllAlbumsFromGenre = this.homey.flow.getActionCard(
-      'queue-all-albums-from-genre'
-    );
+    const cardActionQueueAllAlbumsFromGenre =
+      this.homey.flow.getActionCard('queue-all-albums-genre');
     cardActionQueueAllAlbumsFromGenre.registerArgumentAutocompleteListener(
       'genre',
       async (query, args) => this.getGenreByQuery(args.device, query)
@@ -216,6 +232,23 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     return this.homey.flow.getDeviceTriggerCard('no-results').trigger(device, tokens);
   }
 
+  private webradiostationResultToAutocomplete(
+    result: ISearchResult,
+    query: string
+  ): { name: string; uri: string; service: string; type: string; icon: string }[] {
+    return withResult(result)
+      .filter.titleStartsWithOrContains(query)
+      .items.map((i: ISearchResultItem) => {
+        return {
+          name: i.title,
+          uri: i.uri,
+          service: i.service,
+          type: i.type || '',
+          icon: i.icon || ''
+        };
+      });
+  }
+
   private resultToAutocomplete(
     result: ISearchResult,
     query: string
@@ -242,6 +275,23 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     if (query.length !== 0) {
       try {
         return this.albumResultToAutocomplete(await device.browse(ALBUMS_URL), query);
+      } catch (err) {
+        this.error(err);
+      }
+    }
+    return [];
+  }
+
+  private async getFavouriteWebradiostationByQuery(
+    device: IVolumioMusicPlayerDevice,
+    query: string
+  ): Promise<any> {
+    if (query.length !== 0) {
+      try {
+        return this.webradiostationResultToAutocomplete(
+          await device.browse(WEBRADIOSTATION_FAVOURITES),
+          query
+        );
       } catch (err) {
         this.error(err);
       }

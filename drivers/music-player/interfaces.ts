@@ -4,6 +4,7 @@ export const ARTISTS_URL = 'artists://';
 export const ALBUMS_URL = 'albums://';
 export const GENRES_URL = 'genres://';
 export const FAVOURITES_URL = 'favourites';
+export const WEBRADIOSTATION_FAVOURITES = 'radio/favourites';
 
 export interface IQueueItem {
   uri: string;

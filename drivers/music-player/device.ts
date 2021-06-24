@@ -283,11 +283,11 @@ class VolumioMusicPlayerDevice extends Homey.Device implements IVolumioMusicPlay
 
   private async setPlayerState(state: IPlayerState): Promise<void> {
     await this.setCapabilityValue('speaker_playing', state.status === 'play').catch(this.error);
-    await this.setCapabilityValue('speaker_artist', state.artist).catch(this.error);
-    await this.setCapabilityValue('speaker_album', state.album).catch(this.error);
-    await this.setCapabilityValue('speaker_track', state.title).catch(this.error);
-    await this.setCapabilityValue('speaker_duration', state.duration).catch(this.error);
-    await this.setCapabilityValue('speaker_position', state.position).catch(this.error);
+    await this.setCapabilityValue('speaker_artist', state.artist || '').catch(this.error);
+    await this.setCapabilityValue('speaker_album', state.album || '').catch(this.error);
+    await this.setCapabilityValue('speaker_track', state.title || '').catch(this.error);
+    await this.setCapabilityValue('speaker_duration', state.duration || 0).catch(this.error);
+    await this.setCapabilityValue('speaker_position', state.position || 0).catch(this.error);
     await this.setCapabilityValue('volume_set', state.volume / 100).catch(this.error);
     await this.setCapabilityValue('speaker_shuffle', state.random).catch(this.error);
     await this.setAlbumArtwork(state.albumart);

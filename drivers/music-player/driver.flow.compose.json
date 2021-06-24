@@ -1,6 +1,13 @@
 {
   "actions": [
     {
+      "id": "play-favourites",
+      "title": {
+        "en": "Play tracks from favourites",
+        "nl": "Speel favoriete tracks"
+      }
+    },
+    {
       "id": "play-playlist",
       "title": {
         "en": "Play playlist",
@@ -43,14 +50,7 @@
       ]
     },
     {
-      "id": "play-favourites",
-      "title": {
-        "en": "Play track from favourites",
-        "nl": "Speel alle favorieten"
-      }
-    },
-    {
-      "id": "play-all-from-artist",
+      "id": "play-all-artist",
       "title": {
         "en": "Play every track from artist",
         "nl": "Speel alles af van artiest"
@@ -99,7 +99,7 @@
       }
     },
     {
-      "id": "queue-all-artists-from-genre",
+      "id": "queue-all-artists-genre",
       "title": {
         "en": "Queue all artists from genre",
         "nl": "Plaats alle artiesten van muziekstijl in wachtrij"
@@ -120,7 +120,7 @@
       ]
     },
     {
-      "id": "queue-all-albums-from-genre",
+      "id": "queue-all-albums-genre",
       "title": {
         "en": "Queue all albums from genre",
         "nl": "Plaats alle albums van muziekstijl in wachtrij"
@@ -141,7 +141,7 @@
       ]
     },
     {
-      "id": "queue-all-albums-from-year",
+      "id": "queue-all-albums-year",
       "title": {
         "en": "Queue all albums from year",
         "nl": "Plaats alle albums van jaar in wachtrij"
@@ -160,6 +160,27 @@
             "min": "1900",
             "max": "2100",
             "step": "1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "listen-favourite-webradiostation",
+      "title": {
+        "en": "Listen to favourite webradiostation",
+        "nl": "Luister naar favoriete webradiozender"
+      },
+      "titleFormatted": {
+        "en": "Listen to favourite webradiostation [[webradiostation]]",
+        "nl": "Luister naar favoriete webradiozender [[webradiostation]]"
+      },
+      "args": [
+        {
+          "type": "autocomplete",
+          "name": "webradiostation",
+          "placeholder": {
+            "en": "AccuClassical",
+            "nl": "Concertzender"
           }
         }
       ]
