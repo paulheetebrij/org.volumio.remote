@@ -167,6 +167,58 @@
             }
           }
         ]
+      },
+      {
+        "id": "queue-all-artists-from-genre",
+        "title": {
+          "en": "Queue all artists from genre",
+          "nl": "Plaats alle artiesten van genre in wachtrij"
+        },
+        "titleFormatted": {
+          "en": "Queue every artist from [[genre]]",
+          "nl": "Plaats alle artiesten van van [[genre]] in wachtrij"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "autocomplete",
+            "name": "genre",
+            "placeholder": {
+              "en": "Blues",
+              "nl": "Dance"
+            }
+          }
+        ]
+      },
+      {
+        "id": "queue-all-albums-from-genre",
+        "title": {
+          "en": "Queue all albums from genre",
+          "nl": "Plaats alle albums van genre in wachtrij"
+        },
+        "titleFormatted": {
+          "en": "Queue every album from [[genre]]",
+          "nl": "Plaats alle albums van van [[genre]] in wachtrij"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=music-player"
+          },
+          {
+            "type": "autocomplete",
+            "name": "genre",
+            "placeholder": {
+              "en": "Bluegrass",
+              "nl": "Nederpop"
+            }
+          }
+        ]
       }
     ]
   },

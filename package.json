@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
+    "install": "npm install",
     "prebuild:prettier-format": "prettier --config .prettierrc '**/*.ts' --write",
     "prebuild:lint": "eslint . --ext .ts --fix",
     "prebuild": "npm run -s prebuild:prettier-format && npm run -s prebuild:lint",

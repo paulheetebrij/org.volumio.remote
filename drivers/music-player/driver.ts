@@ -1,4 +1,12 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 import Homey from 'homey'; // eslint-disable-line
+import {
+  ARTISTS_URL,
+  GENRES_URL,
+  ISearchResultItem,
+  IVolumioMusicPlayerDevice
+} from './interfaces'; // eslint-disable-line
+import { withResult } from './withResult'; // eslint-disable-line
 
 class VolumioMusicPlayerDriver extends Homey.Driver {
   /**
@@ -22,13 +30,12 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       const { device, wildcard } = args;
       const tokens = { wildcard, class: this.homey.__('playlists') };
       try {
-        const lists: string[] = await device.listPlayLists();
+        const d = device as IVolumioMusicPlayerDevice;
+        const lists: string[] = await d.listPlayLists();
         if (lists.length !== 0) {
           const selected = lists.filter((i) => i.toLowerCase().includes(wildcard.toLowerCase()));
           if (selected.length !== 0) {
-            const selectedPlaylist = selected.slice(
-              Math.floor(Math.random() * selected.length) - 1
-            )[0];
+            const selectedPlaylist = this.pickOne(selected);
             await device.playPlayList(selectedPlaylist);
           } else {
             const cardTriggerNoPlaylistsFound = this.homey.flow.getDeviceTriggerCard('no-results');
@@ -48,15 +55,11 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       // eslint-disable-line
       const { device, wildcard } = args;
       try {
-        const result: any = await device.searchFor(wildcard);
-        const tracks = result.navigation.lists
-          .map((l: any) => l.items)
-          .reduce((a: any, c: any) => a.items.concat(c.items))
-          .filter(
-            (i: any) => i.type === 'song' && i.title.toLowerCase().includes(wildcard.toLowerCase())
-          );
-        if (tracks.length !== 0) {
-          await device.replaceAndPlay({ items: tracks });
+        const d = device as IVolumioMusicPlayerDevice;
+        const result = await d.searchFor(wildcard);
+        const { items } = withResult(result).all.filter.songs.titleContains(wildcard);
+        if (items.length !== 0) {
+          await d.replaceAndPlay({ items });
         } else {
           const tokens = { wildcard, class: this.homey.__('tracks') };
           const cardTriggerNoTracksFound = this.homey.flow.getDeviceTriggerCard('no-results');
@@ -70,38 +73,132 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     const cardActionPlayAllFromArtist = this.homey.flow.getActionCard('play-all-from-artist');
     cardActionPlayAllFromArtist.registerArgumentAutocompleteListener(
       'artist',
-      async (query, args) => {
-        const { device } = args;
-        if (query.length === 0) {
-          return [];
-        }
-        try {
-          const result = await device.browse('artists://');
-          const results = result.navigation.lists[0].items.map((i: any) => {
-            return { name: i.title, image: device.tinyarturi(i.title), uri: i.uri };
-          });
-          const shortlist = results.filter(
-            (r: any) => r.name.toLowerCase().slice(0, query.length) === query.toLowerCase()
-          );
-          return shortlist.length !== 0
-            ? shortlist
-            : results.filter((r: any) => r.name.toLowerCase().includes(query.toLowerCase()));
-        } catch (err) {
-          this.error(err);
-          return [];
-        }
-      }
+      async (query, args) => this.getArtistByQuery(args.device, query)
     );
     cardActionPlayAllFromArtist.registerRunListener(async (args: any) => {
       const { device, artist } = args;
       try {
-        const result = await device.browse(artist.uri);
-        const { items } = result.navigation.lists[0];
-        await device.replaceAndPlay({ items });
+        const d = device as IVolumioMusicPlayerDevice;
+        const result = await d.browse(artist.uri);
+        const { items } = withResult(result);
+        await d.replaceAndPlay({ items });
       } catch (err) {
         this.error(err);
       }
     });
+
+    const cardActionQueueAllArtistsFromGenre = this.homey.flow.getActionCard(
+      'queue-all-artists-from-genre'
+    );
+    cardActionQueueAllArtistsFromGenre.registerArgumentAutocompleteListener(
+      'genre',
+      async (query, args) => this.getGenreByQuery(args.device, query)
+    );
+    cardActionQueueAllArtistsFromGenre.registerRunListener(async (args: any) => {
+      const { device, genre } = args;
+      try {
+        const d = device as IVolumioMusicPlayerDevice;
+        this.log(JSON.stringify(genre));
+        const result = await d.browse(genre.uri);
+        // 1e lijst = Albums, 2e lijst = Artiesten.
+        const { items } = result.navigation.lists[1];
+        if (items.length !== 0) {
+          await d.addToQueue(items);
+        } else {
+          // Een genre/stijl wordt dus weergegeven in Volumio terwijl er geen albums/artiesten zijn. Vreemd...
+          const tokens = { wildcard: genre.name, class: this.homey.__('tracks') };
+          const cardTriggerNoTracksFound = this.homey.flow.getDeviceTriggerCard('no-results');
+          await cardTriggerNoTracksFound.trigger(device, tokens);
+        }
+      } catch (err) {
+        this.error(err);
+      }
+    });
+
+    const cardActionQueueAllAlbumsFromGenre = this.homey.flow.getActionCard(
+      'queue-all-albums-from-genre'
+    );
+    cardActionQueueAllAlbumsFromGenre.registerArgumentAutocompleteListener(
+      'genre',
+      async (query, args) => this.getGenreByQuery(args.device, query)
+    );
+    cardActionQueueAllAlbumsFromGenre.registerRunListener(async (args: any) => {
+      const { device, genre } = args;
+      try {
+        const d = device as IVolumioMusicPlayerDevice;
+        this.log(JSON.stringify(genre));
+        const result = await d.browse(genre.uri);
+        // 1e lijst = Albums, 2e lijst = Artiesten.
+        const { items } = result.navigation.lists[0];
+        if (items.length !== 0) {
+          await d.addToQueue(items);
+        } else {
+          // Een genre/stijl wordt dus weergegeven in Volumio terwijl er geen albums/artiesten zijn. Vreemd...
+          const tokens = { wildcard: genre.name, class: this.homey.__('tracks') };
+          const cardTriggerNoTracksFound = this.homey.flow.getDeviceTriggerCard('no-results');
+          await cardTriggerNoTracksFound.trigger(device, tokens);
+        }
+      } catch (err) {
+        this.error(err);
+      }
+    });
+  }
+
+  private async getArtistByQuery(device: IVolumioMusicPlayerDevice, query: string): Promise<any> {
+    if (query.length !== 0) {
+      try {
+        const result = await device.browse(ARTISTS_URL);
+        return withResult(result)
+          .filter.titleStartsWithOrContains(query)
+          .items.map((i: ISearchResultItem) => {
+            return { name: i.title, uri: i.uri };
+          });
+      } catch (err) {
+        this.error(err);
+      }
+    }
+    return [];
+  }
+
+  private async getGenreByQuery(device: IVolumioMusicPlayerDevice, query: string): Promise<any> {
+    if (query.length !== 0) {
+      try {
+        const result = await device.browse(GENRES_URL);
+        return withResult(result)
+          .filter.titleStartsWithOrContains(query)
+          .items.map((i: ISearchResultItem) => {
+            return { name: i.title, uri: i.uri };
+          });
+      } catch (err) {
+        this.error(err);
+      }
+    }
+    return [];
+  }
+
+  // Sends Volumio player state change notification to selected device
+  async promoteState(deviceId: string, data: any): Promise<void> {
+    const device: any = this.getDevices().find((d) => d.getData().id === deviceId);
+    if (device) {
+      const d = device as IVolumioMusicPlayerDevice;
+      await d.promoteState(data);
+    } else {
+      this.error(`${this.homey.__('volumioAudioPlayerNotFound')}: ${deviceId}`);
+    }
+  }
+
+  // Sends Volumio player queue change notification to selected device
+  async promoteQueue(deviceId: string, data: any): Promise<void> {
+    //
+  }
+
+  // Sends Volumio player zones change notification to selected device
+  async promoteZones(deviceId: string, data: any): Promise<void> {
+    //
+  }
+
+  private pickOne<T>(all: T[]): T {
+    return all.slice(Math.floor(Math.random() * all.length) - 1)[0];
   }
 
   /**
@@ -126,26 +223,6 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       };
     });
     return devices;
-  }
-
-  // Sends Volumio player state change notification to selected device
-  async promoteState(deviceId: string, data: any): Promise<void> {
-    const device: any = this.getDevices().find((d) => d.getData().id === deviceId);
-    if (device) {
-      await device.promoteState(data);
-    } else {
-      this.error(`${this.homey.__('volumioAudioPlayerNotFound')}: ${deviceId}`);
-    }
-  }
-
-  // Sends Volumio player queue change notification to selected device
-  async promoteQueue(deviceId: string, data: any): Promise<void> {
-    //
-  }
-
-  // Sends Volumio player zones change notification to selected device
-  async promoteZones(deviceId: string, data: any): Promise<void> {
-    //
   }
 }
 
