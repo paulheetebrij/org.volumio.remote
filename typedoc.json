@@ -1,0 +1,10 @@
+{
+  "entryPoints": [
+    "app.ts",
+    "drivers/music-player",
+    "drivers/music-player/driver.ts"
+  ],
+  "exclude": "**/*+(.spec|.e2e).ts",
+  "readme": "./README.md",
+  "out": "docs2"
+}

@@ -1,5 +1,5 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
-import Homey from 'homey'; // eslint-disable-line
+/* eslint-disable node/no-unsupported-features/es-syntax, node/no-missing-import, import/no-unresolved, import/extensions */
+import { Driver } from 'homey';
 import {
   ALBUMS_URL,
   ARTISTS_URL,
@@ -9,25 +9,50 @@ import {
   ISearchResultItem,
   IVolumioMusicPlayerDevice,
   WEBRADIOSTATION_FAVOURITES
-} from './interfaces'; // eslint-disable-line
-import { withResult } from './withResult'; // eslint-disable-line
+} from './interfaces';
+import { withResult } from './withResult';
 
-class VolumioMusicPlayerDriver extends Homey.Driver {
+/**
+ * @class
+ * @extends Driver
+ * @public
+ */
+class VolumioMusicPlayerDriver extends Driver {
   /**
    * onInit is called when the driver is initialized.
    */
   async onInit() {
     this.log('Driver Volumio music player has been initialized');
+
+    this.registerTriggerDeviceOffline();
+    this.registerTriggerDeviceOnline();
+    this.registerActionClearQueue();
+    this.registerActionPlayPlaylist();
+    this.registerActionPlayTracksByTitle();
+    this.registerActionPlayFavourites();
+    this.registerActionPlayAllFromArtist();
+    this.registerActionListenFavouriteWebradiostation();
+    this.registerActionPlayAlbum();
+    this.registerActionqueueAlbumsFromYear();
+    this.registerActionQueueAllArtistsFromGenre();
+    this.registerActionQueueAllAlbumsFromGenre();
+  }
+
+  private registerTriggerDeviceOffline(): void {
     this.addListener('deviceOffline', async (args) => {
       const { device } = args;
       return this.homey.flow.getDeviceTriggerCard('device-offline').trigger(device);
     });
+  }
 
+  private registerTriggerDeviceOnline(): void {
     this.addListener('deviceOnline', async (args) => {
       const { device } = args;
       return this.homey.flow.getDeviceTriggerCard('device-online').trigger(device);
     });
+  }
 
+  private registerActionClearQueue(): void {
     const cardActionClearQueue = this.homey.flow.getActionCard('clear-queue');
     cardActionClearQueue.registerRunListener(async (args: any) => {
       const { device } = args;
@@ -37,7 +62,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionPlayPlaylist(): void {
     const cardActionPlayPlaylist = this.homey.flow.getActionCard('play-playlist');
     cardActionPlayPlaylist.registerRunListener(async (args: any) => {
       // eslint-disable-line
@@ -59,7 +86,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionPlayTracksByTitle(): void {
     const cardActionPlayTracksByTitle = this.homey.flow.getActionCard('play-tracks-by-title');
     cardActionPlayTracksByTitle.registerRunListener(async (args: any) => {
       // eslint-disable-line
@@ -67,7 +96,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       try {
         const d = device as IVolumioMusicPlayerDevice;
         const result = await d.searchFor(wildcard);
-        const { items } = withResult(result).all.filter.songs.titleContains(wildcard);
+        const { items } = withResult(result).all().filter().songs().titleContains(wildcard);
         const tokens = { wildcard, class: this.homey.__('tracks') };
         if (items.length !== 0) {
           await d.replaceAndPlay({ items });
@@ -78,14 +107,16 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionPlayFavourites(): void {
     const cardActionPlayFavourites = this.homey.flow.getActionCard('play-favourites');
     cardActionPlayFavourites.registerRunListener(async (args: any) => {
       const { device } = args;
       try {
         const d = device as IVolumioMusicPlayerDevice;
         const result = await d.browse(FAVOURITES_URL);
-        const { items } = withResult(result);
+        const { items } = withResult(result).first();
         const tokens = { wildcard: this.homey.__('favourites'), class: this.homey.__('tracks') };
         if (items.length !== 0) {
           await d.replaceAndPlay({ items });
@@ -96,7 +127,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionPlayAllFromArtist(): void {
     const cardActionPlayAllFromArtist = this.homey.flow.getActionCard('play-all-artist');
     cardActionPlayAllFromArtist.registerArgumentAutocompleteListener(
       'artist',
@@ -107,7 +140,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       try {
         const d = device as IVolumioMusicPlayerDevice;
         const result = await d.browse(artist.uri);
-        const { items } = withResult(result);
+        const { items } = withResult(result).first();
         const tokens = { wildcard: artist.name, class: this.homey.__('tracks') };
         if (items.length !== 0) {
           await d.replaceAndPlay({ items });
@@ -118,7 +151,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionListenFavouriteWebradiostation(): void {
     const cardActionListenFavouriteWebradiostation = this.homey.flow.getActionCard(
       'listen-favourite-webradiostation'
     );
@@ -137,7 +172,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionPlayAlbum(): void {
     const cardActionPlayAlbum = this.homey.flow.getActionCard('play-album');
     cardActionPlayAlbum.registerArgumentAutocompleteListener('album', async (query, args) =>
       this.getAlbumByQuery(args.device, query)
@@ -147,7 +184,7 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
       try {
         const d = device as IVolumioMusicPlayerDevice;
         const result = await d.browse(album.uri);
-        const { items } = withResult(result);
+        const { items } = withResult(result).first();
         const tokens = { wildcard: album.name, class: this.homey.__('tracks') };
         if (items.length !== 0) {
           await d.replaceAndPlay({ items });
@@ -158,14 +195,16 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionqueueAlbumsFromYear(): void {
     const cardActionqueueAlbumsFromYear = this.homey.flow.getActionCard('queue-all-albums-year');
     cardActionqueueAlbumsFromYear.registerRunListener(async (args: any) => {
       const { device, year } = args;
       try {
         const d = device as IVolumioMusicPlayerDevice;
         const result = await d.browse(ALBUMS_URL);
-        const { items } = withResult(result).filter.byYear(year);
+        const { items } = withResult(result).first().filter().byYear(year);
         const tokens = { wildcard: `year: ${year}`, class: this.homey.__('albums') };
         if (items.length !== 0) {
           await d.addToQueue(items);
@@ -176,7 +215,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionQueueAllArtistsFromGenre(): void {
     const cardActionQueueAllArtistsFromGenre =
       this.homey.flow.getActionCard('queue-all-artists-genre');
     cardActionQueueAllArtistsFromGenre.registerArgumentAutocompleteListener(
@@ -201,7 +242,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
         this.error(err);
       }
     });
+  }
 
+  private registerActionQueueAllAlbumsFromGenre(): void {
     const cardActionQueueAllAlbumsFromGenre =
       this.homey.flow.getActionCard('queue-all-albums-genre');
     cardActionQueueAllAlbumsFromGenre.registerArgumentAutocompleteListener(
@@ -237,7 +280,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     query: string
   ): { name: string; uri: string; service: string; type: string; icon: string }[] {
     return withResult(result)
-      .filter.titleStartsWithOrContains(query)
+      .first()
+      .filter()
+      .titleStartsWithOrContains(query)
       .items.map((i: ISearchResultItem) => {
         return {
           name: i.title,
@@ -254,7 +299,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     query: string
   ): { name: string; uri: string }[] {
     return withResult(result)
-      .filter.titleStartsWithOrContains(query)
+      .first()
+      .filter()
+      .titleStartsWithOrContains(query)
       .items.map((i: ISearchResultItem) => {
         return { name: i.title, uri: i.uri };
       });
@@ -265,7 +312,9 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     query: string
   ): { name: string; uri: string }[] {
     return withResult(result)
-      .filter.titleStartsWithOrContains(query)
+      .first()
+      .filter()
+      .titleStartsWithOrContains(query)
       .items.map((i: ISearchResultItem) => {
         return { name: `${i.title} - ${i.artist}`, uri: i.uri };
       });
@@ -321,7 +370,11 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     return [];
   }
 
-  // Sends Volumio player state change notification to selected device
+  /**
+   * Sends Volumio player state change notification to selected device
+   * @param {string} deviceId
+   * @param {object} body Received push notification
+   */
   async promoteState(deviceId: string, data: any): Promise<void> {
     const device: any = this.getDevices().find((d) => d.getData().id === deviceId);
     if (device) {
@@ -332,12 +385,20 @@ class VolumioMusicPlayerDriver extends Homey.Driver {
     }
   }
 
-  // Sends Volumio player queue change notification to selected device
+  /**
+   * Sends Volumio player queue change notification to selected device
+   * @param {string} deviceId
+   * @param {object} body queue change notification
+   */
   async promoteQueue(deviceId: string, data: any): Promise<void> {
     //
   }
 
-  // Sends Volumio player zones change notification to selected device
+  /**
+   * Sends Volumio player zones change notification to selected device
+   * @param {string} deviceId
+   * @param {object} body zones change notification
+   */
   async promoteZones(deviceId: string, data: any): Promise<void> {
     //
   }

@@ -1,9 +1,14 @@
-import sourceMapSupport from 'source-map-support'; // eslint-disable-line node/no-unsupported-features/es-syntax
-import Homey from 'homey'; // eslint-disable-line
+/** eslint-disable node/no-unsupported-features/es-syntax, node/no-missing-import, import/no-unresolved, import/extensions */
+import { install } from 'source-map-support'; // eslint-disable-line
+import { App } from 'homey'; // eslint-disable-line
 
-sourceMapSupport.install();
+install();
 
-class VolumioApp extends Homey.App {
+/**
+ * @class
+ * @extends App
+ */
+class VolumioApp extends App {
   /**
    * onInit is called when the app is initialized.
    */
@@ -11,7 +16,11 @@ class VolumioApp extends Homey.App {
     this.log('Volumio app has been initialized');
   }
 
-  // Sends Volumio change notification to Volumio driver
+  /**
+   * Sends Volumio change notification to Volumio driver
+   * @param {string} deviceId
+   * @param {object} body Received push notification
+   */
   async volumiostatus(deviceId: string, body: any): Promise<void> {
     const driver: any = this.homey.drivers.getDriver('music-player');
     if (driver) {
