@@ -5,3 +5,4 @@ build/
 #generated documentation
 docs/
 docs2/
+yarn.lock
